@@ -103,12 +103,19 @@ jobs:
 
       - name: Smoke test (live URL must serve the portfolio)
         run: |
-          sleep 10
-          code=$(curl -s -o /dev/null -w "%{http_code}" \
-            https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
-          echo "live status: $code"
-          [ "$code" = "200" ] || { echo "smoke test failed"; exit 1; }
-          body=$(curl -s https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
+          # Retry rather than sleep once: the Worker takes a moment to serve
+          # the newly uploaded assets, and a fixed sleep turns a slow deploy
+          # into a red build for no reason.
+          url="https://pujan-banik-arnab.banikarnab-ipe.workers.dev/"
+          code=""
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || true)
+            echo "attempt $i: status $code"
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+          [ "$code" = "200" ] || { echo "smoke test failed: last status $code"; exit 1; }
+          body=$(curl -s "$url")
           echo "$body" | grep -q "<h1" || { echo "smoke test: no <h1> content"; exit 1; }
           echo "$body" | grep -q 'src="/reveal.js"' || { echo "smoke test: reveal.js missing"; exit 1; }
           echo "content markers present"

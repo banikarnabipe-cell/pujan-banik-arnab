@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Component inventory — Pujan Banik Arnab portfolio (Astro). Machine-readable companion to design.md §6. jsBytes = client-side JS shipped by the component (Astro is static-first).",
+  "project": "pujan-banik-arnab-portfolio",
+  "version": "0.7.0",
+  "stack": {
+    "framework": "astro@7",
+    "language": "typescript-strict",
+    "styling": "Tailwind CSS v4 (@tailwindcss/vite, no preflight) bridged via @theme inline onto generated M3 role tokens; scoped token-driven CSS for pseudo-element machinery",
+    "monorepo": "pnpm workspaces: apps/web + packages/{design-system,ui,config} + tooling/scripts",
+    "clientJs": "minimal, vanilla, transform/opacity only; JS-driven reveal orchestration + ambient hero wave (no reduced-motion suppression, v0.7.0 policy)"
+  },
+  "tokens": {
+    "source": "packages/design-system/design-tokens.json",
+    "compiler": "packages/design-system/build-tokens.mjs",
+    "output": ["packages/design-system/dist/tokens.css", "packages/design-system/dist/theme.css (Tailwind @theme inline bridge)"],
+    "command": "pnpm tokens"
+  },
+  "layout": {
+    "container": "1080px",
+    "gutter": "24px",
+    "sceneRhythm": "clamp(4rem,3rem+4.5vw,6.5rem)",
+    "breakpoints": [
+      320,
+      375,
+      414,
+      768,
+      1024,
+      1280,
+      1440,
+      1920
+    ]
+  },
+  "backgroundSystem": {
+    "name": "exact-reference hero dots (hero-only rule)",
+    "canvas": {
+      "carrier": "html (opaque #ECECEC light / #1E1E1E dark — exact theretriever.app body backgrounds)",
+      "bodyMustStayTransparent": true,
+      "note": "opaque body background would hide the z-index:0 hero wave (known bug class; verify-design-contract.mjs guards)"
+    },
+    "application": [
+      {
+        "selector": ".hero > canvas.wave",
+        "scope": "hero ONLY — no other dotted surface allowed",
+        "pattern": "animated canvas dot wave painted by public/wave.js (byte-exact reference port; v0.7.0: upstream reduced-motion still-frame branch patched out per owner motion policy — pristine copy + provenance in docs/reference-assets/)",
+        "attributes": "data-speed 0.5, data-alpha 1.6, data-size 1.6, 48x26 grid (dotwave token group, injected from design-tokens.json at build time)",
+        "mask": "dual linear-gradient mask composited with intersect (--dotwave-mask-x/y)",
+        "source": "live headless-Chrome forensics of theretriever.app hero (2026-10-22, tool-results/ref-forensics/)"
+      }
+    ],
+    "nonDotVisualLanguage": [
+      "About states: verified decay-1/2/3.svg dot-matrix illustrations as content <img> figures (byte-exact reuse, provenance md5s)",
+      "Experience zones: solid ink fill + tertiary hatch + void",
+      "brand mark: unit box in frame (rect only, zero circles)"
+    ],
+    "guards": [
+      "hero canvas: pointer-events none, IntersectionObserver-gated paint, DPR-aware",
+      "hero is the ONLY dotted surface (contract D3: no radial-gradient circles, no extra canvas.wave)"
+    ]
+  },
+  "components": [
+    {
+      "name": "Layout",
+      "path": "src/layouts/Layout.astro",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "responsibilities": [
+        "document shell",
+        "SEO meta",
+        "theme-color #ECECEC",
+        "reveal IntersectionObserver (transform/opacity only)",
+        "html.js gate + no-observe fallback"
+      ],
+      "a11y": [
+        "lang",
+        "skip link target",
+        "reduced-motion honored in observer decision"
+      ],
+      "jsBytes": "~700B min"
+    },
+    {
+      "name": "Header",
+      "path": "src/components/Header.astro",
+      "props": [],
+      "data": "site.brand, site.nav.links",
+      "a11y": [
+        "nav[aria-label=Primary]",
+        "brand link aria-label",
+        "microlabel links"
+      ],
+      "states": [
+        "link hover = color shift (state-layer equivalent)"
+      ]
+    },
+    {
+      "name": "Hero",
+      "path": "src/components/Hero.astro",
+      "props": [],
+      "data": "site.hero",
+      "variants": [
+        "buttons: filled/outlined/tonal/text via ButtonSpec.variant",
+        "download attr passthrough"
+      ],
+      "features": [
+        "section carries the hero-only exact dot pattern via global.css .hero::before",
+        "stage panel = flat reference card (container-lowest + outline-variant hairline + 12px radius), no sonar",
+        "app window with pulse grid (in-window UI, dark chrome)"
+      ],
+      "a11y": [
+        "aria-labelledby=hero-title",
+        "decorative grids aria-hidden"
+      ]
+    },
+    {
+      "name": "FactsStrip",
+      "path": "src/components/FactsStrip.astro",
+      "props": [],
+      "data": "site.facts",
+      "a11y": [
+        "section[aria-label=Key facts]",
+        "definition list semantics"
+      ],
+      "grid": [
+        "4 cols ≥900px",
+        "2 cols ≥480px",
+        "1 col below"
+      ]
+    },
+    {
+      "name": "Scene",
+      "path": "src/components/Scene.astro",
+      "props": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "kicker",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "divider",
+          "type": "boolean",
+          "required": false
+        }
+      ],
+      "notes": "hairline-divided section wrapper; transparent BG so the shared dot-field shows through"
+    },
+    {
+      "name": "Heading",
+      "path": "src/components/Heading.astro",
+      "props": [
+        {
+          "name": "lines",
+          "type": "readonly string[]",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "notes": "M3 headline-large; explicit line blocks for viewport-stable rhythm"
+    },
+    {
+      "name": "AboutScene",
+      "path": "src/components/AboutScene.astro",
+      "data": "site.scenes.about",
+      "features": [
+        "seeded dot-matrix figures (build-time)",
+        "variants steady/scattered/faint"
+      ],
+      "a11y": [
+        "figure[role=img][aria-label]",
+        "decorative svg aria-hidden"
+      ]
+    },
+    {
+      "name": "SkillsScene",
+      "path": "src/components/SkillsScene.astro",
+      "data": "site.scenes.skills",
+      "features": [
+        "AppWindow skill matrix table",
+        "M3 cards (Process/Quality/Data)"
+      ],
+      "a11y": [
+        "role=table/row/columnheader/cell",
+        "mobile collapse keeps accessible order",
+        "legend role=list"
+      ],
+      "grid": [
+        "3 cards ≥900px → 1 col"
+      ]
+    },
+    {
+      "name": "ProjectsScene",
+      "path": "src/components/ProjectsScene.astro",
+      "data": "site.scenes.projects",
+      "features": [
+        "project cards with impact bar art (aria-hidden)",
+        "status badges shipped/in-progress/academic (text + color)"
+      ],
+      "a11y": [
+        "no color-only meaning"
+      ],
+      "grid": [
+        "4 ≥1024px",
+        "2 ≥480px",
+        "1 below"
+      ]
+    },
+    {
+      "name": "ExperienceScene",
+      "path": "src/components/ExperienceScene.astro",
+      "data": "site.scenes.experience",
+      "features": [
+        "allocation strip (solid/hatch/void zones, role=img)",
+        "principle quote",
+        "timeline entries (M3 list style)"
+      ],
+      "a11y": [
+        "aria-label composes zone percents",
+        "ordered list semantics"
+      ]
+    },
+    {
+      "name": "CredentialsScene",
+      "path": "src/components/CredentialsScene.astro",
+      "data": "site.scenes.credentials",
+      "features": [
+        "two credential groups; featured group = m3-card--filled",
+        "M3 button actions"
+      ]
+    },
+    {
+      "name": "PrinciplesBlock",
+      "path": "src/components/PrinciplesBlock.astro",
+      "data": "site.principles",
+      "notes": "'How I work' — 4 principle bullets; inline deep links"
+    },
+    {
+      "name": "ContactScene",
+      "path": "src/components/ContactScene.astro",
+      "data": "site.contact",
+      "features": [
+        "M3 action row (filled/outlined/text)",
+        "exclusive <details name=faq> accordion, plus→minus icon (transform only)"
+      ],
+      "a11y": [
+        "details/summary native semantics",
+        "summary hover = state layer",
+        "no JS required"
+      ]
+    },
+    {
+      "name": "Footer",
+      "path": "src/components/Footer.astro",
+      "data": "site.brand, site.nav.footerLinks, site.nav.footerNote",
+      "a11y": [
+        "nav[aria-label=Footer]"
+      ]
+    },
+    {
+      "name": "AppWindow",
+      "path": "src/components/AppWindow.astro",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "badge",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tone",
+          "type": "'live' | 'passive'",
+          "required": false
+        }
+      ],
+      "notes": "inverse-surface chrome, traffic dots, level-2 elevation"
+    }
+  ],
+  "globalPrimitives": {
+    "buttons": [
+      ".btn",
+      ".btn--filled",
+      ".btn--outlined",
+      ".btn--tonal",
+      ".btn--text",
+      "(legacy .btn--ghost)"
+    ],
+    "cards": [
+      ".m3-card",
+      ".m3-card--elevated",
+      ".m3-card--filled"
+    ],
+    "chips": [
+      ".m3-chip"
+    ],
+    "misc": [
+      ".container",
+      ".scene",
+      ".microlabel",
+      ".m3-divider",
+      ".skip-link",
+      "[data-reveal] contract"
+    ],
+    "stateLayers": {
+      "mechanism": "::after currentColor veil",
+      "hover": 0.08,
+      "focus": 0.12,
+      "pressed": 0.12,
+      "dragged": 0.16
+    }
+  },
+  "contentModel": {
+    "file": "src/data/site.ts",
+    "schema": "exported readonly interfaces (single source of copy)",
+    "mustEditMarkers": "none since v0.3.0 — every value sourced from the owner's real CV + previous portfolio; v0.4.0 enriched with verifiable specifics (thesis L18/ANOVA, crusher QFD, SSC); do not invent facts"
+  },
+  "qa": {
+    "visualSweep": "tooling/scripts/qa-capture.sh (8 viewports, full-page)",
+    "envChecks": "tooling/scripts/verify-env-emulation.mjs (motion-policy / no-JS / landscape overflow)",
+    "contract": "tooling/scripts/verify-design-contract.mjs (125 checks, both schemes)",
+    "checklist": "docs/QA-CHECKLIST.md"
+  }
+}

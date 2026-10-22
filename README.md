@@ -45,7 +45,15 @@ pnpm format                # prettier (config in packages/config)
 | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | `pnpm tokens`                  | compile `design-tokens.json` → `dist/tokens.css` + `dist/theme.css`                                   |
 | `pnpm build`                   | recursive, topological build of all packages                                                          |
-| `pnpm typecheck` / `pnpm lint` | `astro check` on `@pba/web`                                                                           |
+| `pnpm build:timings`           | build with Astro's timing report (where the build time went)                                          |
+| `pnpm typecheck` / `pnpm lint` | `astro check` on `@pba/web` (fails on warnings, not just errors)                                      |
+| `pnpm preview`                 | serve the built site locally                                                                          |
+| `pnpm preview:bg`              | start the preview server in the background (Astro 7.2+)                                               |
+| `pnpm preview:status`          | is the background preview running? (URL, PID, uptime)                                                 |
+| `pnpm preview:logs`            | print the background preview server's log                                                             |
+| `pnpm preview:stop`            | stop the background preview server                                                                    |
+| `pnpm astro:info`              | report the Astro/Node/Adapter/Integration environment                                                 |
+| `pnpm astro:sync`              | regenerate the Astro TypeScript types                                                                 |
 | `pnpm qa:csp`                  | every inline script is sha256-pinned in `_headers` (static gate)                                      |
 | `pnpm qa:csp:render`           | serves `dist` with the real `_headers` and asserts nothing is blocked (browser gate)                  |
 | `pnpm qa:env`                  | reduced-motion / no-JS / landscape gates (browser gate)                                               |

@@ -7,10 +7,16 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:timings": "astro build --timings",
     "preview": "astro preview",
-    "check": "astro check",
+    "preview:bg": "astro preview --background",
+    "preview:status": "astro preview status",
+    "preview:logs": "astro preview logs",
+    "preview:stop": "astro preview stop",
+    "check": "astro check --minimumFailingSeverity warning",
     "sync": "astro sync",
-    "test": "astro check"
+    "astro:info": "astro info",
+    "test": "astro check --minimumFailingSeverity warning"
   },
   "dependencies": {
     "@pba/design-system": "workspace:*",

@@ -9,6 +9,9 @@ jobs:
   verify:
     name: install → build → QA gates → typecheck → deploy dry-run
     runs-on: ubuntu-latest
+    env:
+      # Astro docs recommend disabling telemetry in CI.
+      ASTRO_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
 

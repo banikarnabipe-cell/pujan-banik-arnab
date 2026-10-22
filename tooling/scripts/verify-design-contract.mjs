@@ -42,6 +42,31 @@ const VIEWPORTS = [
   [1920, 1080],
 ];
 
+/**
+ * Wait until every running CSS transition/animation on the page has finished.
+ *
+ * Colour changes driven by `prefers-color-scheme` are animated (the nav links
+ * transition colour over 200ms), so measuring immediately after switching the
+ * emulated scheme can read a colour that is still in flight. A fixed sleep is
+ * a guess; waiting for the transitions to finish is not.
+ */
+async function settleTransitions(page) {
+  await page.evaluate(async () => {
+    const frame = () => new Promise((r) => requestAnimationFrame(r));
+    const running = () => document.getAnimations().filter((a) => a.playState === "running");
+    // A colour change scheduled by a media-query switch creates its transition
+    // on the NEXT frame, so "nothing is running yet" is not proof that the
+    // colours have settled. Check across a few frames before giving up.
+    for (let pass = 0; pass < 4; pass++) {
+      await frame();
+      const active = running();
+      if (active.length === 0) continue;
+      await Promise.all(active.map((a) => a.finished.catch(() => {})));
+    }
+    await frame();
+  });
+}
+
 const browser = await launchBrowser();
 const ctx = await browser.newContext();
 
@@ -188,7 +213,11 @@ for (const [w, h] of VIEWPORTS) {
   await page.emulateMedia({ colorScheme: "dark" });
   // Color transitions (e.g. .nav-link 200ms) must settle before measuring,
   // otherwise computed colors are read mid-flight at their light values.
-  await page.waitForTimeout(350);
+  // Waiting for the running transitions to actually finish is deterministic;
+  // a fixed sleep is not - on a loaded CI runner 350ms was sometimes not
+  // enough, and the muted label was measured at its LIGHT colour on the dark
+  // canvas (2.53:1 instead of 5.92:1), failing the gate at random.
+  await settleTransitions(page);
   const dark = await page.evaluate(() => {
     const html = getComputedStyle(document.documentElement);
     const wave = document.querySelector(".hero > canvas.wave");
@@ -333,7 +362,7 @@ for (const [w, h] of VIEWPORTS) {
 
   // ── Dark full-page contrast pass (same logic, dark scheme).
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.waitForTimeout(350);
+  await settleTransitions(page);
   const dc = await page.evaluate(() => {
     const effBg = (el) => {
       let node = el;

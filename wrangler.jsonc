@@ -8,6 +8,14 @@
   // "This Worker does not exist on your account".
   "name": "pujan-banik-arnab",
   "compatibility_date": "2026-10-01",
+  // Self-build before every deploy: Workers Builds' default pipeline has a
+  // blank build command, so `npx wrangler deploy` must produce ./apps/web/dist
+  // itself (monorepo: design-system tokens → web). Runs for manual deploys,
+  // wrangler dry-runs, and the Cloudflare Git integration alike.
+  "build": {
+    "command": "pnpm -r build",
+    "cwd": "."
+  },
   "assets": {
     "directory": "./apps/web/dist",
     "not_found_handling": "none"

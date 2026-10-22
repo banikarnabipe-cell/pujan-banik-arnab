@@ -1,0 +1,195 @@
+---
+import AppWindow from "@pba/ui/components/AppWindow.astro";
+import Button from "@pba/ui/components/Button.astro";
+import { site } from "../data/site";
+import tokenSource from "@pba/design-system/tokens.json";
+
+const { hero } = site;
+/* Dot-wave parameters come from the design-tokens.json `dotwave` group —
+   the single source of truth (values verified against theretriever.app's
+   live hero canvas: data-speed 0.5, data-alpha 1.6, data-size 1.6, 48x26). */
+const dotwave = tokenSource.dotwave;
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <!-- Hero dot pattern: the reference's animated canvas dot wave. Painted by
+       public/wave.js (byte-exact port of theretriever.app wave.js). Hero is the
+       ONLY dotted surface in the design system. -->
+  <canvas
+    class="wave"
+    data-speed={dotwave.speed.$value}
+    data-alpha={dotwave.alpha.$value}
+    data-size={dotwave.size.$value}
+    data-cols={dotwave.cols.$value}
+    data-rows={dotwave.rows.$value}
+    aria-hidden="true"
+  ></canvas>
+  <div class="container grid">
+    <div class="copy">
+      <p class="microlabel kicker" data-reveal>{hero.kicker}</p>
+      <h1 class="display" id="hero-title" data-reveal style="--reveal-order: 1">
+        {hero.title.map((line, i) => (
+          <span class="line">{line}{i < hero.title.length - 1 ? " " : ""}</span>
+        ))}
+      </h1>
+      <p class="lede" data-reveal style="--reveal-order: 2">{hero.lede}</p>
+      <div class="actions" data-reveal style="--reveal-order: 3">
+        {hero.actions.map((action) => (
+          <Button
+            href={action.href}
+            variant={action.variant}
+            download={action.download}
+          >{action.label}</Button>
+        ))}
+      </div>
+    </div>
+
+    <div class="stage" data-reveal style="--reveal-order: 2">
+      <div class="panel" aria-hidden="true"></div>
+      <div class="float">
+        <AppWindow title={hero.window.title} badge={hero.window.progressLabel} tone="live">
+          <p class="status">{hero.window.statusLine}</p>
+          <div class="pulse-grid" aria-hidden="true">
+            {Array.from({ length: 56 }).map((_, i) => {
+              const mode = i % 14 === 6 ? "learning" : i % 7 === 3 ? "working" : "core";
+              return <span class={`cell cell--${mode}`} />;
+            })}
+          </div>
+          <ul class="legend" role="list">
+            {hero.window.legend.map((chip) => (
+              <li class={`chip chip--${chip.tone}`}>{chip.label}</li>
+            ))}
+          </ul>
+        </AppWindow>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Byte-exact port of the reference's wave.js (provenance: docs/reference-assets/).
+     Paints every canvas.wave; animates only while visible; renders a still frame
+     under prefers-reduced-motion — the reference's own native behavior. -->
+<script is:inline defer src="/wave.js"></script>
+
+<style>
+  .hero { padding-block: var(--hero-pad-top) clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(2rem, 1rem + 4vw, 4rem);
+    align-items: center;
+    /* Content layer above the dot-wave canvas (which sits at z-index: 0). */
+    position: relative;
+    z-index: 1;
+  }
+  /* ── Dot wave (exact reference treatment) ──────────────────
+     Fills the hero, fades out to the left behind the copy and toward
+     the bottom edge via two masked gradients composited with intersect
+     — same declarations as the reference's .hero > .wave. Color is a
+     token so the canvas paint follows it (wave.js reads computed color). */
+  .wave {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    z-index: 0;
+    color: var(--dotwave-color);
+    -webkit-mask-image: var(--dotwave-mask-x), var(--dotwave-mask-y);
+    -webkit-mask-composite: source-in;
+    mask-image: var(--dotwave-mask-x), var(--dotwave-mask-y);
+    mask-composite: intersect;
+  }
+  /* Phones: damp the wave, as the reference does once the copy stacks.
+     Uses the project's existing hero stack breakpoint (900px). */
+  @media (max-width: 900px) {
+    .wave { opacity: var(--dotwave-mobile-opacity); }
+  }
+  .kicker { margin-bottom: 18px; }
+  .display {
+    font-size: var(--md-sys-type-display-large-size);
+    font-weight: var(--md-sys-type-display-large-weight);
+    line-height: var(--md-sys-type-display-large-line-height);
+    letter-spacing: var(--md-sys-type-display-large-tracking);
+    text-wrap: balance;
+  }
+  .line { display: block; }
+  .lede {
+    margin-top: 22px;
+    max-width: 44ch;
+    color: var(--md-sys-color-on-surface);
+  }
+  .actions {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .actions .btn { align-self: flex-start; }
+
+  .stage { position: relative; min-height: 320px; }
+  /* Flat reference-card panel behind the floating window:
+     #F4F4F4 surface, #E6E6E6 hairline, 12px radius — the exact card
+     treatment extracted from theretriever.app (.card). No dot texture:
+     the hero section itself is the only dotted surface. */
+  .panel {
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-surface-container-lowest);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-shape-m);
+  }
+  .float {
+    position: relative;
+    padding: clamp(1rem, 0.5rem + 2.5vw, 2.5rem) 0 0 clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  }
+  .status {
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--win-muted);
+    margin-bottom: 12px;
+  }
+  .pulse-grid {
+    display: grid;
+    grid-template-columns: repeat(14, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .cell {
+    aspect-ratio: 1;
+    min-width: 0;
+    border-radius: 2px;
+    background: #2c2c2c;
+    transition: background var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  }
+  .cell--core { background: #2f4a35; }
+  .cell--working { background: #3d3d3d; }
+  .cell--learning { background: #503a52; }
+  .legend {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: var(--md-sys-type-label-small-size);
+    letter-spacing: var(--md-sys-type-label-small-tracking);
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--win-edge);
+    color: var(--win-muted);
+  }
+  .chip--core { color: #7ec493; border-color: #37503c; }
+  .chip--working { color: #b5b5aa; border-color: #3a3a3a; }
+  .chip--learning { color: #b9a3c9; border-color: #43364a; }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .actions { flex-direction: row; flex-wrap: wrap; }
+    .stage { min-height: 0; }
+  }
+</style>

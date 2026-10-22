@@ -1,0 +1,13 @@
+---
+/* M3 label role in the mono schematic voice — the site's micro-label. */
+interface Props {
+  readonly class?: string | undefined;
+}
+const { class: className } = Astro.props;
+---
+<p
+  class:list={[
+    "font-sys-mono text-label-medium uppercase text-on-surface-variant",
+    className,
+  ]}
+><slot /></p>

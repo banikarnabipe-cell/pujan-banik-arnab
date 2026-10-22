@@ -1,0 +1,21 @@
+---
+/* M3 headline role (headline-large) — explicit line blocks keep the
+   viewport-stable rhythm the portfolio scenes rely on. */
+interface Props {
+  readonly lines: readonly string[];
+  readonly id?: string | undefined;
+  readonly class?: string | undefined;
+}
+
+const { lines, id, class: className } = Astro.props;
+---
+<h2
+  id={id}
+  data-reveal
+  class:list={[
+    "text-headline-large text-balance max-w-[24ch]",
+    className,
+  ]}
+>
+  {lines.map((line) => <span class="block">{line}</span>)}
+</h2>

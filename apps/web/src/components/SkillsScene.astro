@@ -1,0 +1,129 @@
+---
+import AppWindow from "@pba/ui/components/AppWindow.astro";
+import Heading from "./Heading.astro";
+import { site } from "../data/site";
+
+const { skills } = site.scenes;
+
+const toneClass = {
+  core: "row--core",
+  working: "row--working",
+  learning: "row--learning",
+} as const;
+---
+
+<Heading lines={skills.title} />
+
+<div class="prose" data-reveal style="--reveal-order: 1">
+  {skills.lede.map((paragraph) => <p>{paragraph}</p>)}
+</div>
+
+<div class="demo" data-reveal style="--reveal-order: 2">
+  <AppWindow title={skills.window.title} badge={skills.window.progressLabel} tone="passive">
+    <p class="status">{skills.window.statusLine}</p>
+    <div class="table" role="table" aria-label="Skill matrix: skill, domain, level">
+      <div class="table-head microlabel" role="row">
+        <span role="columnheader">Skill</span>
+        <span role="columnheader">Domain</span>
+        <span class="right" role="columnheader">Level</span>
+      </div>
+      {skills.window.rows.map((row) => (
+        <div class={`row ${toneClass[row.level]}`} role="row">
+          <span role="cell">{row.skill}</span>
+          <span class="mono" role="cell">{row.domain}</span>
+          <span class="mono right" role="cell">{row.score}</span>
+        </div>
+      ))}
+    </div>
+    <ul class="legend" role="list">
+      {skills.window.legend.map((chip) => (
+        <li class={`chip chip--${chip.tone}`}>{chip.label}</li>
+      ))}
+    </ul>
+  </AppWindow>
+</div>
+
+<div class="cards">
+  {skills.cards.map((card, idx) => (
+    <article class="m3-card card" data-reveal style={`--reveal-order: ${idx + 1}`}>
+      <h3>{card.title}</h3>
+      <p>{card.text}</p>
+    </article>
+  ))}
+</div>
+
+<style>
+  .prose {
+    display: grid;
+    gap: 16px;
+    max-width: 62ch;
+    margin-top: 22px;
+  }
+  .demo { margin-top: clamp(2rem, 1.2rem + 3vw, 3rem); }
+  .status {
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--win-muted);
+    margin-bottom: 12px;
+  }
+  .table { display: grid; gap: 2px; }
+  .table-head,
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 8rem 7rem;
+    gap: 12px;
+    align-items: baseline;
+    padding: 7px 10px;
+    border-radius: 4px;
+    font-size: var(--md-sys-type-body-medium-size);
+  }
+  .table-head { color: var(--md-sys-color-inverse-primary); }
+  .row { background: #242424; }
+  .row .mono { color: var(--win-muted); }
+  .right { text-align: right; }
+  .row--learning .right { color: #b9a3c9; }
+  .row--working .right { color: #c9b06a; }
+  .row--core .right { color: #7ec493; }
+  .legend {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-size: var(--md-sys-type-label-small-size);
+    letter-spacing: var(--md-sys-type-label-small-tracking);
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--win-edge);
+    color: var(--md-sys-color-inverse-primary);
+  }
+  .chip--core { color: #7ec493; border-color: #37503c; }
+  .chip--working { color: #b5b5aa; border-color: #3a3a3a; }
+  .chip--learning { color: #b9a3c9; border-color: #43364a; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .card h3 {
+    font-size: var(--md-sys-type-title-medium-size);
+    font-weight: var(--md-sys-type-title-medium-weight);
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.55;
+  }
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: 1fr; }
+    .table-head { display: none; }
+    .row { grid-template-columns: 1fr auto; }
+    .row .mono:not(.right) { display: none; }
+  }
+</style>

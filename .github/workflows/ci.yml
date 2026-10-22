@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    name: install → build → typecheck → deploy dry-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Enable pnpm (version pinned via packageManager)
+        run: corepack enable pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (design-system → web)
+        run: pnpm build
+
+      - name: Typecheck (astro check — 0 errors gate)
+        run: pnpm typecheck
+
+      - name: Validate Cloudflare deployment (dry-run, no credentials)
+        run: pnpm exec wrangler deploy --dry-run

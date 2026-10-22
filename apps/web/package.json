@@ -1,0 +1,26 @@
+{
+  "name": "@pba/web",
+  "type": "module",
+  "version": "0.7.0",
+  "private": true,
+  "description": "Portfolio web app of Pujan Banik Arnab (IPE Engineer) — Astro 7 static site on the M3 tailored token system; hero is the ONLY dotted surface (animated canvas wave).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "sync": "astro sync",
+    "test": "astro check"
+  },
+  "dependencies": {
+    "@pba/design-system": "workspace:*",
+    "@pba/ui": "workspace:*",
+    "astro": "^7.4.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3"
+  }
+}

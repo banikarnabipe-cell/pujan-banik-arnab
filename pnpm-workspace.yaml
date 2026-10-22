@@ -1,0 +1,30 @@
+packages:
+  - apps/*
+  - packages/*
+  - tooling/*
+# NOTE: rea-agent/ is an independent npm project (REA toolchain) and is
+# deliberately NOT part of the workspace — it keeps its own lockfile.
+
+# Lifecycle build scripts allowed to run (pnpm 10+ blocks them by default):
+# esbuild — install validation; sharp — native image bindings (astro);
+# workerd — wrangler's local runtime binary.
+allowBuilds:
+  esbuild: true
+  workerd: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
+
+# Supply-chain protection (pnpm 12): only install packages published at least
+# 24h ago — except these, which our lockfile pins to same-day releases
+# (verified during the v0.7.0 install; re-check when bumping astro).
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@astrojs/check"
+  - "@astrojs/language-server"
+  - "@astrojs/markdown-satteri"
+  - "@astrojs/prism"
+  - "@astrojs/telemetry"
+  - astro

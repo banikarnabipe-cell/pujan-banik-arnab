@@ -1,0 +1,15 @@
+/* Tailwind v4 entry — CSS-first, NO preflight.
+   The app reset in global.css is authoritative (adopting Tailwind's preflight
+   here would silently change rendered output and break the 125-check design
+   contract). Layer order: theme + utilities are layered; global.css stays
+   UNLAYERED so existing app CSS wins over utilities until components migrate
+   to Tailwind (utilities apply cleanly on new @pba/ui components). */
+
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@pba/design-system/theme.css" layer(theme);
+
+/* Tailwind v4 auto-detection only scans the Vite root (apps/web). The shared
+   components live in the workspace package — declare them explicitly. */
+@source "../../../packages/ui/src";

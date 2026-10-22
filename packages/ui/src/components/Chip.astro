@@ -1,0 +1,24 @@
+---
+/* M3 assist/filter chip — mono micro-type, hairline outline, state layer. */
+interface Props {
+  readonly href?: string | undefined;
+  readonly class?: string | undefined;
+}
+
+const { href, class: className } = Astro.props;
+
+const base = [
+  "relative isolate inline-flex items-center gap-1.5 rounded-xs border border-outline-variant",
+  "bg-surface-container-lowest text-on-surface-variant",
+  "font-sys-mono text-label-small uppercase leading-none py-[7px] px-3 no-underline",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-xs after:content-[\"\"]",
+  "after:bg-current after:opacity-0 after:transition-[opacity] after:duration-(--md-sys-motion-duration-short4) after:ease-standard after:-z-10",
+  "hover:after:opacity-(--md-state-layer-hover)",
+  "active:after:opacity-(--md-state-layer-pressed)",
+].join(" ");
+---
+{href ? (
+  <a href={href} class:list={[base, className]}><slot /></a>
+) : (
+  <span class:list={[base, className]}><slot /></span>
+)}

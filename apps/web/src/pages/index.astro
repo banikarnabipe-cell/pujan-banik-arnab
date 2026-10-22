@@ -1,0 +1,52 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import FactsStrip from "../components/FactsStrip.astro";
+import Scene from "../components/Scene.astro";
+import AboutScene from "../components/AboutScene.astro";
+import SkillsScene from "../components/SkillsScene.astro";
+import ProjectsScene from "../components/ProjectsScene.astro";
+import ExperienceScene from "../components/ExperienceScene.astro";
+import CredentialsScene from "../components/CredentialsScene.astro";
+import PrinciplesBlock from "../components/PrinciplesBlock.astro";
+import ContactScene from "../components/ContactScene.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+
+const { scenes } = site;
+---
+
+<Layout>
+  <Header />
+  <main id="main">
+    <Hero />
+    <FactsStrip />
+
+    <Scene id="about" kicker={scenes.about.kicker}>
+      <AboutScene />
+    </Scene>
+
+    <Scene id="skills" kicker={scenes.skills.kicker}>
+      <SkillsScene />
+    </Scene>
+
+    <Scene id="projects" kicker={scenes.projects.kicker}>
+      <ProjectsScene />
+    </Scene>
+
+    <Scene id="experience" kicker={scenes.experience.kicker}>
+      <ExperienceScene />
+    </Scene>
+
+    <Scene id="credentials" kicker={scenes.credentials.kicker}>
+      <CredentialsScene />
+      <PrinciplesBlock />
+    </Scene>
+
+    <Scene id="contact" kicker={site.contact.kicker}>
+      <ContactScene />
+    </Scene>
+  </main>
+  <Footer />
+</Layout>

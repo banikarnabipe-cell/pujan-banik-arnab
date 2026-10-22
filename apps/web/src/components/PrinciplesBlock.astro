@@ -1,0 +1,67 @@
+---
+import { site } from "../data/site";
+
+const { principles } = site;
+---
+
+<div class="principles" id="principles" data-reveal>
+  <h3>{principles.title}</h3>
+  <ul role="list">
+    {principles.items.map((item) => (
+      <li>{item}</li>
+    ))}
+  </ul>
+  <p class="links">
+    {principles.links.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
+  </p>
+</div>
+
+<style>
+  .principles {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    max-width: 72ch;
+  }
+  h3 {
+    font-size: var(--md-sys-type-title-medium-size);
+    font-weight: var(--md-sys-type-title-medium-weight);
+    margin-bottom: 14px;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+  li {
+    position: relative;
+    padding-left: 20px;
+    font-size: var(--md-sys-type-body-medium-size);
+    line-height: 1.6;
+    color: var(--md-sys-color-on-surface);
+  }
+  li::before {
+    content: "×";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-mono);
+    color: var(--md-sys-color-tertiary);
+    font-weight: 700;
+  }
+  .links {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+  }
+  .links a {
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: var(--md-sys-type-body-medium-size);
+  }
+  .links a:hover { color: var(--md-sys-color-on-surface); }
+</style>

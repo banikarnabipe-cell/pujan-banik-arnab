@@ -1,0 +1,18 @@
+{
+  // Cloudflare Workers (static assets) — deployment target for the portfolio.
+  // Validated with `wrangler deploy --dry-run`; deploy with `pnpm deploy`.
+  // Secrets: none required (fully static site) — never add tokens here.
+  "name": "pujan-banik-arnab-portfolio",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./apps/web/dist",
+    "not_found_handling": "none"
+  },
+  // Preview environment: separate Worker so preview deployments can never
+  // touch production traffic. `wrangler deploy --env preview`.
+  "env": {
+    "preview": {
+      "name": "pujan-banik-arnab-portfolio-preview"
+    }
+  }
+}

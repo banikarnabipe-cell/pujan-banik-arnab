@@ -1,0 +1,257 @@
+/* GENERATED FILE — do not edit. Source: design-tokens.json, compiler: scripts/build-tokens.mjs.
+   Rebuild: npm run tokens
+   Architecture: Material 3 (Material You / M3 Expressive) role tokens, tailored baseline:
+   ink primary on a neutral canvas anchored to the reference site in BOTH schemes —
+   light surface #ECECEC and dark surface #1E1E1E (exact theretriever.app body
+   backgrounds, live-DOM verified 2026-10-22; the reference is dark-first with a
+   prefers-color-scheme: light override — same runtime behavior, always resolves
+   to one scheme). Retriever-derived rhythm, mono schematic labels.
+   Hero dot pattern = the reference's animated canvas dot wave (wave.js),
+   applied to the hero section ONLY. */
+
+:root {
+  /* ── M3 color roles ─────────────────────────────── */
+  --md-sys-color-primary: #131313;
+  --md-sys-color-on-primary: #f4f4f4;
+  --md-sys-color-primary-container: #e2e2e2;
+  --md-sys-color-on-primary-container: #131313;
+  --md-sys-color-secondary: #5d5d5d;
+  --md-sys-color-on-secondary: #f4f4f4;
+  --md-sys-color-secondary-container: #e3e3e3;
+  --md-sys-color-on-secondary-container: #232323;
+  --md-sys-color-tertiary: #8c4a26;
+  --md-sys-color-on-tertiary: #fff8f5;
+  --md-sys-color-tertiary-container: #f0d7c8;
+  --md-sys-color-on-tertiary-container: #2c1509;
+  --md-sys-color-error: #b3261e;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #f9dedc;
+  --md-sys-color-on-error-container: #410e0b;
+  --md-sys-color-surface: #ececec;
+  --md-sys-color-surface-dim: #dcdcdc;
+  --md-sys-color-surface-bright: #f6f6f6;
+  --md-sys-color-surface-container-lowest: #f4f4f4;
+  --md-sys-color-surface-container-low: #f0f0f0;
+  --md-sys-color-surface-container: #eaeaea;
+  --md-sys-color-surface-container-high: #e4e4e4;
+  --md-sys-color-surface-container-highest: #dedede;
+  --md-sys-color-on-surface: #131313;
+  --md-sys-color-on-surface-variant: #5d5d5d;
+  --md-sys-color-outline: #8f8f8f;
+  --md-sys-color-outline-variant: #e6e6e6;
+  --md-sys-color-inverse-surface: #1d1d1d;
+  --md-sys-color-inverse-on-surface: #eeeeee;
+  --md-sys-color-inverse-primary: #c2c2c2;
+  --md-sys-color-surface-tint: #131313;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+
+  /* ── M3 state layers ────────────────────────────── */
+  --md-state-layer-hover: 0.08;
+  --md-state-layer-focus: 0.12;
+  --md-state-layer-pressed: 0.12;
+  --md-state-layer-dragged: 0.16;
+
+  /* ── M3 elevation ───────────────────────────────── */
+  --md-elevation-level0: none;
+  --md-elevation-level1: 0 1px 2px rgba(0,0,0,0.18), 0 1px 3px 1px rgba(0,0,0,0.09);
+  --md-elevation-level2: 0 1px 2px rgba(0,0,0,0.20), 0 2px 6px 2px rgba(0,0,0,0.10);
+  --md-elevation-level3: 0 1px 3px rgba(0,0,0,0.22), 0 4px 8px 3px rgba(0,0,0,0.10);
+
+  /* ── M3 shape scale (tailored flat) ─────────────── */
+  --md-shape-none: 0px;
+  --md-shape-xs: 6px;
+  --md-shape-s: 8px;
+  --md-shape-m: 12px;
+  --md-shape-l: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 9999px;
+
+  /* ── M3 type scale (tailored) ───────────────────── */
+  --md-sys-type-display-large-size: clamp(2.4rem, 1rem + 6vw, 4.5rem);
+  --md-sys-type-display-large-line-height: 1.05;
+  --md-sys-type-display-large-weight: 700;
+  --md-sys-type-display-large-tracking: -0.035em;
+  --md-sys-type-display-small-size: 2.25rem;
+  --md-sys-type-display-small-line-height: 1.1;
+  --md-sys-type-display-small-weight: 700;
+  --md-sys-type-display-small-tracking: -0.03em;
+  --md-sys-type-headline-large-size: clamp(1.75rem, 1.15rem + 2.6vw, 2.7rem);
+  --md-sys-type-headline-large-line-height: 1.05;
+  --md-sys-type-headline-large-weight: 500;
+  --md-sys-type-headline-large-tracking: -0.02em;
+  --md-sys-type-headline-medium-size: 1.6rem;
+  --md-sys-type-headline-medium-line-height: 1.15;
+  --md-sys-type-headline-medium-weight: 500;
+  --md-sys-type-headline-medium-tracking: -0.02em;
+  --md-sys-type-title-large-size: 1.25rem;
+  --md-sys-type-title-large-line-height: 1.3;
+  --md-sys-type-title-large-weight: 500;
+  --md-sys-type-title-large-tracking: -0.01em;
+  --md-sys-type-title-medium-size: 1.1rem;
+  --md-sys-type-title-medium-line-height: 1.45;
+  --md-sys-type-title-medium-weight: 500;
+  --md-sys-type-title-medium-tracking: 0;
+  --md-sys-type-title-small-size: 0.9375rem;
+  --md-sys-type-title-small-line-height: 1.45;
+  --md-sys-type-title-small-weight: 500;
+  --md-sys-type-title-small-tracking: 0.01em;
+  --md-sys-type-body-large-size: 1.0625rem;
+  --md-sys-type-body-large-line-height: 1.6;
+  --md-sys-type-body-large-weight: 400;
+  --md-sys-type-body-large-tracking: 0;
+  --md-sys-type-body-medium-size: 0.9375rem;
+  --md-sys-type-body-medium-line-height: 1.55;
+  --md-sys-type-body-medium-weight: 400;
+  --md-sys-type-body-medium-tracking: 0;
+  --md-sys-type-body-small-size: 0.875rem;
+  --md-sys-type-body-small-line-height: 1.5;
+  --md-sys-type-body-small-weight: 400;
+  --md-sys-type-body-small-tracking: 0;
+  --md-sys-type-label-large-size: 0.875rem;
+  --md-sys-type-label-large-line-height: 1.2;
+  --md-sys-type-label-large-weight: 500;
+  --md-sys-type-label-large-tracking: 0.08em;
+  --md-sys-type-label-medium-size: 0.78rem;
+  --md-sys-type-label-medium-line-height: 1.2;
+  --md-sys-type-label-medium-weight: 400;
+  --md-sys-type-label-medium-tracking: 0.08em;
+  --md-sys-type-label-small-size: 0.72rem;
+  --md-sys-type-label-small-line-height: 1.2;
+  --md-sys-type-label-small-weight: 400;
+  --md-sys-type-label-small-tracking: 0.06em;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ── M3 motion ──────────────────────────────────── */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ── Layout rhythm (retriever-derived) ──────────── */
+  --container: 1080px;
+  --gutter: 24px;
+  --scene-pad: clamp(4rem, 3rem + 4.5vw, 6.5rem);
+  --hero-pad-top: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+
+  /* ── Hero dot WAVE (exact reference pattern, hero-only) ──
+     Verified via live headless-Chrome forensics (2026-10-22): the reference hero's
+     dots are an animated <canvas class="wave"> driven by wave.js — NOT the card's
+     radial-gradient. Color/mask/opacity feed the .wave styles in Hero.astro; speed,
+     alpha, size, cols, rows feed the canvas data-attributes (imported from
+     design-tokens.json at build time — single source of truth). */
+  --dotwave-color: #000000;
+  --dotwave-mobile-opacity: 0.45;
+  --dotwave-mask-x: linear-gradient(90deg, rgba(0, 0, 0, 0), #000 42%);
+  --dotwave-mask-y: linear-gradient(#000 60%, rgba(0, 0, 0, 0) 100%);
+
+  /* ── Legacy aliases (migration safety net) ────────
+     Old component names resolved to M3 roles. Remove after full migration. */
+  --canvas: var(--md-sys-color-surface);
+  --canvas-deep: var(--md-sys-color-surface-container-high);
+  --ink: var(--md-sys-color-on-surface);
+  --muted: var(--md-sys-color-on-surface-variant);
+  --hairline: var(--md-sys-color-outline-variant);
+  --card: var(--md-sys-color-surface-container-lowest);
+  --card-edge: var(--md-sys-color-outline-variant);
+  --btn-ghost: var(--md-sys-color-secondary-container);
+  --btn-ghost-edge: var(--md-sys-color-outline-variant);
+  --radius: var(--md-shape-xs);
+  --win-bg: var(--md-sys-color-inverse-surface);
+  --win-chrome: #292929;
+  --win-edge: #3a3a3a;
+  --win-text: var(--md-sys-color-inverse-on-surface);
+  --win-muted: var(--md-sys-color-inverse-primary);
+  --status-stable: #2e7d4f;
+  --status-degrading: #b07a1c;
+  --status-critical: #c05126;
+  --text-display: var(--md-sys-type-display-large-size);
+  --text-h2: var(--md-sys-type-headline-large-size);
+  --text-h3: var(--md-sys-type-title-medium-size);
+  --text-body: var(--md-sys-type-body-large-size);
+  --text-small: var(--md-sys-type-body-medium-size);
+  --text-micro: var(--md-sys-type-label-medium-size);
+  --tracking-caps: var(--md-sys-type-label-medium-tracking);
+  --leading-tight: var(--md-sys-type-display-large-line-height);
+  --leading-body: var(--md-sys-type-body-large-line-height);
+  --ease-out: var(--md-sys-motion-easing-standard-decelerate);
+  --dur-quick: var(--md-sys-motion-duration-medium2);
+  --dur-reveal: var(--md-sys-motion-duration-long2);
+  --reveal-shift: 12px;
+  --stagger-step: 0.09s;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* ── M3 color roles — dark scheme ───────────────
+       Anchored to the EXACT reference dark palette (theretriever.app
+       :root defaults, live-verified 2026-10-22): surface #1E1E1E,
+       surface-container-lowest #262626 (ref --panel), on-surface
+       #FFFFFF, on-surface-variant #9A9A9A, outline-variant #343434,
+       tertiary #D69957 (ref --amber). Filled buttons invert exactly
+       like the reference's .btn.primary. inverseSurface deliberately
+       stays dark so the hero window chrome is dark in both schemes. */
+    --md-sys-color-primary: #ffffff;
+    --md-sys-color-on-primary: #1e1e1e;
+    --md-sys-color-primary-container: #3a3a3a;
+    --md-sys-color-on-primary-container: #ececec;
+    --md-sys-color-secondary: #c2c2c2;
+    --md-sys-color-on-secondary: #1e1e1e;
+    --md-sys-color-secondary-container: #333333;
+    --md-sys-color-on-secondary-container: #ececec;
+    --md-sys-color-tertiary: #d69957;
+    --md-sys-color-on-tertiary: #1e1e1e;
+    --md-sys-color-tertiary-container: #4a341f;
+    --md-sys-color-on-tertiary-container: #e0be9a;
+    --md-sys-color-error: #f2b8b5;
+    --md-sys-color-on-error: #601410;
+    --md-sys-color-error-container: #8c1d18;
+    --md-sys-color-on-error-container: #f9dedc;
+    --md-sys-color-surface: #1e1e1e;
+    --md-sys-color-surface-dim: #191919;
+    --md-sys-color-surface-bright: #2a2a2a;
+    --md-sys-color-surface-container-lowest: #262626;
+    --md-sys-color-surface-container-low: #292929;
+    --md-sys-color-surface-container: #2c2c2c;
+    --md-sys-color-surface-container-high: #303030;
+    --md-sys-color-surface-container-highest: #333333;
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-on-surface-variant: #9a9a9a;
+    --md-sys-color-outline: #6e6e6e;
+    --md-sys-color-outline-variant: #343434;
+    --md-sys-color-inverse-surface: #262626;
+    --md-sys-color-inverse-on-surface: #f4f4f4;
+    --md-sys-color-inverse-primary: #9a9a9a;
+    --md-sys-color-surface-tint: #ffffff;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-scrim: #000000;
+
+    /* Wave dots flip to white — the reference paints .wave with
+       color: var(--text), which is #FFF in dark. */
+    --dotwave-color: #ffffff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --md-sys-motion-duration-short1: 0.01ms;
+    --md-sys-motion-duration-short2: 0.01ms;
+    --md-sys-motion-duration-short4: 0.01ms;
+    --md-sys-motion-duration-medium1: 0.01ms;
+    --md-sys-motion-duration-medium2: 0.01ms;
+    --md-sys-motion-duration-medium4: 0.01ms;
+    --md-sys-motion-duration-long2: 0.01ms;
+    --dur-quick: 0.01ms;
+    --dur-reveal: 0.01ms;
+    --reveal-shift: 0px;
+    --stagger-step: 0s;
+  }
+}

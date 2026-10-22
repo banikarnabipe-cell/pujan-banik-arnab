@@ -49,6 +49,9 @@ jobs:
 
       - name: Validate Cloudflare deployment (dry-run)
         run: pnpm exec wrangler deploy --dry-run
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   # Production deploy from the canonical branch, after verification passes.
   # Credentials come exclusively from encrypted Actions secrets

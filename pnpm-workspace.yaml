@@ -1,0 +1,18 @@
+packages:
+  - apps/*
+  - packages/*
+  - tooling/*
+# NOTE: rea-agent/ is an independent npm project (REA toolchain) and is
+# deliberately NOT part of the workspace — it keeps its own lockfile.
+
+# Lifecycle build scripts allowed to run (pnpm 10+ blocks them by default):
+# esbuild — install validation; sharp — native image bindings (astro);
+# workerd — wrangler's local runtime binary.
+allowBuilds:
+  esbuild: true
+  workerd: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd

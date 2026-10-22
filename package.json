@@ -1,0 +1,34 @@
+{
+  "name": "pujan-banik-arnab-portfolio",
+  "type": "module",
+  "version": "0.7.0",
+  "private": true,
+  "description": "v0.7.0: pnpm monorepo (apps/web + packages/{ui,design-system,config}) — Tailwind v4 token bridge on the M3 tailored system, retriever-derived design language, Cloudflare deployment target. Hero remains the ONLY dotted surface (animated canvas wave).",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @pba/web dev",
+    "build": "pnpm -r build",
+    "preview": "pnpm --filter @pba/web preview",
+    "tokens": "pnpm --filter @pba/design-system build",
+    "typecheck": "pnpm --filter @pba/web check",
+    "lint": "pnpm --filter @pba/web check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm --filter @pba/web test",
+    "deploy": "pnpm build && wrangler deploy --env=\"\"",
+    "deploy:preview": "pnpm build && wrangler deploy --env preview",
+    "deploy:dry": "pnpm build && wrangler deploy --dry-run",
+    "qa:design": "node tooling/scripts/verify-design-contract.mjs",
+    "qa:env": "node tooling/scripts/verify-env-emulation.mjs",
+    "qa:devices": "node tooling/scripts/device-qa.mjs",
+    "qa:visual": "bash tooling/scripts/qa-capture.sh",
+    "resume": "python3 tooling/scripts/make-resume.py"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "wrangler": "^4.42.0"
+  }
+}

@@ -23,6 +23,14 @@ logs/
 # QA evidence produced by the gates (tool-results/qa, ref-forensics, …)
 tool-results/
 
+# Local agent/editor state — these routinely hold API keys
+.mcp.json
+skills/
+download/
+upload/
+pr-work/
+worklog.md
+
 # OS / editor
 .DS_Store
 Thumbs.db

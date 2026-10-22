@@ -29,10 +29,13 @@
   "observability": {
     "enabled": false,
   },
-  // Previews: Cloudflare's branch-oriented preview workflow. The block is
-  // REQUIRED for `wrangler preview` (and therefore for the Workers Builds
-  // preview builds that run on every pull request). This Worker has no
-  // preview-specific variables or bindings, so it is empty.
+  // Previews: Cloudflare's branch-oriented preview workflow. `wrangler preview`
+  // REFUSES to run without a `previews` block ("Your Wrangler configuration is
+  // missing a `previews` block to run this command"), and Workers Builds runs
+  // exactly that command for every branch that is not the production branch -
+  // so the build failed in under a second, during config validation, on every
+  // pull request. This Worker has no preview-specific variables or bindings,
+  // so the block is empty.
   // (The old `env.preview` block is gone: it named a Worker that does not
   // exist on the account and nothing deployed to it. `pnpm deploy:preview`
   // publishes a branch Preview instead.)

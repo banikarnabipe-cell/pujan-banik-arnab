@@ -40,7 +40,7 @@ jobs:
       - name: CSP coverage gate (every inline script pinned)
         run: pnpm qa:csp
 
-      - name: Typecheck (astro check — 0 errors gate)
+      - name: Typecheck (astro check — fails on errors or warnings)
         run: pnpm typecheck
 
       - name: Component manifest is up to date

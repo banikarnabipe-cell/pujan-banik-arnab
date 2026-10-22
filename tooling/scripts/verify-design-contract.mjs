@@ -43,32 +43,48 @@ const VIEWPORTS = [
 ];
 
 /**
- * Wait until every running CSS transition/animation on the page has finished.
+ * Switch the emulated colour scheme and wait until the page has applied it.
  *
- * Colour changes driven by `prefers-color-scheme` are animated (the nav links
- * transition colour over 200ms), so measuring immediately after switching the
- * emulated scheme can read a colour that is still in flight. A fixed sleep is
- * a guess; waiting for the transitions to finish is not.
+ * The nav links transition their colour over 200ms, so measuring right after
+ * the switch can read a colour that is still in flight: a half-faded
+ * light-scheme colour on the dark canvas reads 2.53:1 instead of 5.92:1, and
+ * the gate failed at random (2 of 10 runs).
+ *
+ * Waiting for stability is not enough either - for the first frames the
+ * colour has not started moving yet, so it looks stable. Suppressing the
+ * transition for the switch makes the final colour apply immediately, which
+ * is what the contract is about: the FINAL colours, not the animation.
  */
-async function settleTransitions(page) {
-  await page.evaluate(async () => {
-    const frame = () => new Promise((r) => requestAnimationFrame(r));
-    const running = () => document.getAnimations().filter((a) => a.playState === "running");
-    // A colour change scheduled by a media-query switch creates its transition
-    // on the NEXT frame, so "nothing is running yet" is not proof that the
-    // colours have settled. Check across a few frames before giving up.
-    for (let pass = 0; pass < 4; pass++) {
-      await frame();
-      const active = running();
-      if (active.length === 0) continue;
-      await Promise.all(active.map((a) => a.finished.catch(() => {})));
-    }
-    await frame();
+async function switchScheme(page, scheme) {
+  await page.addStyleTag({
+    content: "*, *::before, *::after { transition: none !important; }",
   });
+  await page.emulateMedia({ colorScheme: scheme });
+  await page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+  );
 }
 
 const browser = await launchBrowser();
 const ctx = await browser.newContext();
+
+// Release the browser and the local server even if a check throws, so a failed
+// gate does not leave an orphaned Chrome behind.
+let cleaned = false;
+const cleanup = async () => {
+  if (cleaned) return;
+  cleaned = true;
+  await ctx.close().catch(() => {});
+  await browser.close().catch(() => {});
+  await closeServer();
+};
+for (const event of ["uncaughtException", "unhandledRejection"]) {
+  process.once(event, async (err) => {
+    await cleanup();
+    console.error(err);
+    process.exit(1);
+  });
+}
 
 function lum(r, g, b) {
   const f = (c) => {
@@ -138,7 +154,7 @@ for (const [w, h] of VIEWPORTS) {
     { expected: EXPECTED_WAVE },
   );
 
-  // Canvas pixel forensics: painted + animated (skipped pixel diff under reduced motion).
+  // Canvas pixel forensics: painted + animated.
   const pixels = await page.evaluate(async () => {
     const cv = document.querySelector(".hero > canvas.wave");
     if (!cv) return null;
@@ -150,8 +166,19 @@ for (const [w, h] of VIEWPORTS) {
       g.drawImage(cv, 0, 0);
       const d = g.getImageData(0, 0, c.width, Math.min(c.height, 400)).data;
       let non = 0;
-      for (let i = 3; i < d.length; i += 4) if (d[i] > 0) non++;
-      return non;
+      // Fingerprint the ALPHA CHANNEL, not just how many pixels are lit. The
+      // count alone can be identical across two samples while the wave has
+      // moved on (observed deltas as small as 11px), which made the
+      // "animating" check fail at random. The hash is position-sensitive, so
+      // it changes whenever a dot moves or changes opacity.
+      let hash = 0;
+      for (let i = 3; i < d.length; i += 4) {
+        if (d[i] > 0) {
+          non++;
+          hash = (Math.imul(hash, 31) + i + d[i]) | 0;
+        }
+      }
+      return { non, hash };
     };
     const a = grab();
     await new Promise((r) => setTimeout(r, 900));
@@ -170,10 +197,13 @@ for (const [w, h] of VIEWPORTS) {
     audit.attrs.rows === EXPECTED_WAVE.rows;
   const maskOk =
     audit.mask && audit.mask.includes(EXPECTED_MASK_X) && audit.mask.includes(EXPECTED_MASK_Y);
-  const paintOk = pixels && pixels.a > 0;
+  const paintOk = pixels && pixels.a.non > 0;
   // v0.7.0 motion policy: the wave animates for EVERYONE — no reduced-motion
   // still frame anymore (upstream branch patched out; see docs/MOTION.md).
-  const animOk = pixels && pixels.a !== pixels.b;
+  // Compare the pixel fingerprints, not the lit-pixel counts: the wave can
+  // move on while the count stays identical, which made this check fail at
+  // random (observed 1 failure in 10 runs).
+  const animOk = pixels && pixels.a.hash !== pixels.b.hash;
   check(`D1 ${w}px canvas #ECECEC`, bgOk, audit.bodyBg);
   check(
     `D2 ${w}px hero canvas.wave present+first, exact attrs`,
@@ -188,12 +218,12 @@ for (const [w, h] of VIEWPORTS) {
   check(
     `D2 ${w}px wave painted (nonzero pixels)`,
     !!paintOk,
-    pixels ? `${pixels.a}px` : "no canvas",
+    pixels ? `${pixels.a.non}px` : "no canvas",
   );
   check(
     `D2 ${w}px wave animating (always, per v0.7.0 motion policy)`,
     !!animOk,
-    pixels ? `a=${pixels.a} b=${pixels.b}` : "",
+    pixels ? `lit ${pixels.a.non}->${pixels.b.non}px` : "",
   );
   check(
     `D2 ${w}px wave color #000 + full-bleed rect`,
@@ -210,14 +240,7 @@ for (const [w, h] of VIEWPORTS) {
   check(`D4 ${w}px no horizontal overflow`, audit.overflow <= 0, `delta=${audit.overflow}px`);
 
   // ── Dark scheme pass: exact reference dark palette (live-verified 2026-10-22).
-  await page.emulateMedia({ colorScheme: "dark" });
-  // Color transitions (e.g. .nav-link 200ms) must settle before measuring,
-  // otherwise computed colors are read mid-flight at their light values.
-  // Waiting for the running transitions to actually finish is deterministic;
-  // a fixed sleep is not - on a loaded CI runner 350ms was sometimes not
-  // enough, and the muted label was measured at its LIGHT colour on the dark
-  // canvas (2.53:1 instead of 5.92:1), failing the gate at random.
-  await settleTransitions(page);
+  await switchScheme(page, "dark");
   const dark = await page.evaluate(() => {
     const html = getComputedStyle(document.documentElement);
     const wave = document.querySelector(".hero > canvas.wave");
@@ -295,9 +318,20 @@ for (const [w, h] of VIEWPORTS) {
   check("C1 résumé download action", c.resume && c.resumeDownload);
 
   // D5: verified reference dot-matrix illustrations reused in About states.
-  // (lazy images: scroll the triptych into view and wait before asserting)
+  // (lazy images: scroll the triptych into view and wait for them to load)
   await page.evaluate(() => document.querySelector(".states")?.scrollIntoView({ block: "center" }));
-  await page.waitForTimeout(700);
+  // Wait for the images themselves rather than for a fixed delay - a lazy
+  // image can still be incomplete 700ms after the scroll on a slow runner.
+  await page
+    .waitForFunction(
+      () => {
+        const imgs = [...document.querySelectorAll(".states img.state-img")];
+        return imgs.length === 3 && imgs.every((i) => i.complete && i.naturalWidth > 0);
+      },
+      null,
+      { timeout: 15000 },
+    )
+    .catch(() => {});
   const decay = await page.evaluate(() =>
     [...document.querySelectorAll(".states img.state-img")].map((i) => {
       const r = i.getBoundingClientRect();
@@ -361,8 +395,7 @@ for (const [w, h] of VIEWPORTS) {
   check("A1 muted labels >= 4.5:1 (AA)", rMuted >= 4.5, `${rMuted.toFixed(2)}:1`);
 
   // ── Dark full-page contrast pass (same logic, dark scheme).
-  await page.emulateMedia({ colorScheme: "dark" });
-  await settleTransitions(page);
+  await switchScheme(page, "dark");
   const dc = await page.evaluate(() => {
     const effBg = (el) => {
       let node = el;
@@ -407,7 +440,5 @@ for (const [w, h] of VIEWPORTS) {
   await page.close();
 }
 
-await ctx.close();
-await browser.close();
-await closeServer();
+await cleanup();
 reporter.finish();

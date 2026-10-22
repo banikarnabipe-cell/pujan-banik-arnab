@@ -446,8 +446,8 @@
     "mustEditMarkers": "none since v0.3.0 — every value sourced from the owner's real CV + previous portfolio; v0.4.0 enriched with verifiable specifics (thesis L18/ANOVA, crusher QFD, SSC); do not invent facts"
   },
   "clientJs": {
-    "public/reveal.js": "1413 bytes — IntersectionObserver reveal; adds html.no-observe when IntersectionObserver is missing",
-    "public/wave.js": "2976 bytes — hero canvas dot wave"
+    "apps/web/public/reveal.js": "IntersectionObserver reveal; adds html.no-observe when IntersectionObserver is missing",
+    "apps/web/public/wave.js": "hero canvas dot wave"
   },
   "qa": {
     "cspCoverage": "tooling/scripts/verify-csp.mjs (every inline script sha256-pinned)",

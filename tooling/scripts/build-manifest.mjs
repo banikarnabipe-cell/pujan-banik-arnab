@@ -200,13 +200,10 @@ function collect() {
   return components;
 }
 
-const bytes = (p) => {
-  try {
-    return statSync(join(REPO_ROOT, p)).size;
-  } catch {
-    return 0;
-  }
-};
+// NB: no file sizes here. Byte counts depend on line endings, so a checkout
+// with CRLF (Windows) and one with LF (CI) would never agree and
+// `manifest:check` would fail on one of them. A number that cannot be
+// stable in both places does not belong in a generated file.
 
 const pkg = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
 
@@ -311,8 +308,9 @@ const manifest = {
       "none since v0.3.0 — every value sourced from the owner's real CV + previous portfolio; v0.4.0 enriched with verifiable specifics (thesis L18/ANOVA, crusher QFD, SSC); do not invent facts",
   },
   clientJs: {
-    "public/reveal.js": `${bytes("apps/web/public/reveal.js")} bytes — IntersectionObserver reveal; adds html.no-observe when IntersectionObserver is missing`,
-    "public/wave.js": `${bytes("apps/web/public/wave.js")} bytes — hero canvas dot wave`,
+    "apps/web/public/reveal.js":
+      "IntersectionObserver reveal; adds html.no-observe when IntersectionObserver is missing",
+    "apps/web/public/wave.js": "hero canvas dot wave",
   },
   qa: {
     cspCoverage: "tooling/scripts/verify-csp.mjs (every inline script sha256-pinned)",

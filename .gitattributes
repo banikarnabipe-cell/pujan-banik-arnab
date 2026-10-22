@@ -1,0 +1,18 @@
+# Normalise text files to LF in the repository AND in every working copy.
+#
+# Without this, a Windows checkout has CRLF and CI has LF. Any generated
+# artifact that depends on file bytes then differs between the two, and a
+# "is it up to date?" check can never pass in both places. (This is exactly
+# how components.manifest.json failed on the first CI run.)
+* text=auto eol=lf
+
+# Binary assets must never be line-ending normalised.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

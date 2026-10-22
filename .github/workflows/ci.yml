@@ -19,6 +19,15 @@ jobs:
         with:
           node-version: 24
 
+      # Corepack downloads the pinned pnpm binary on every run. pnpm 12 ships
+      # as a native binary (~50MB) and the download has a 30s timeout, so a
+      # slow runner fails the job before anything is built. Cache it, keyed on
+      # package.json because that is where the pin lives.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/node/corepack
+          key: corepack-${{ runner.os }}-${{ hashFiles('package.json') }}
+
       - name: Enable pnpm (version pinned via packageManager)
         run: corepack enable pnpm
 
@@ -84,6 +93,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      # Corepack downloads the pinned pnpm binary on every run. pnpm 12 ships
+      # as a native binary (~50MB) and the download has a 30s timeout, so a
+      # slow runner fails the job before anything is built. Cache it, keyed on
+      # package.json because that is where the pin lives.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/node/corepack
+          key: corepack-${{ runner.os }}-${{ hashFiles('package.json') }}
 
       - name: Enable pnpm (version pinned via packageManager)
         run: corepack enable pnpm

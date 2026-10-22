@@ -13,6 +13,23 @@ const check = reporter.check;
 
 const browser = await launchBrowser();
 
+// Release the browser and the local server even if a check throws, so a failed
+// gate does not leave an orphaned Chrome behind.
+let cleaned = false;
+const cleanup = async () => {
+  if (cleaned) return;
+  cleaned = true;
+  await browser.close().catch(() => {});
+  await closeServer();
+};
+for (const event of ["uncaughtException", "unhandledRejection"]) {
+  process.once(event, async (err) => {
+    await cleanup();
+    console.error(err);
+    process.exit(1);
+  });
+}
+
 // --- 1. reduced motion: policy = motion still runs (no suppression) ---
 const ctx1 = await browser.newContext({
   reducedMotion: "reduce",
@@ -125,6 +142,5 @@ check(
 await p3.screenshot({ path: screenshotPath("site-844-landscape.png") });
 await ctx3.close();
 
-await browser.close();
-await closeServer();
+await cleanup();
 reporter.finish();

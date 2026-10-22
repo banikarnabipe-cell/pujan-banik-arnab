@@ -24,7 +24,7 @@
 import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
-import { join, extname, resolve } from "node:path";
+import { join, extname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
@@ -70,6 +70,20 @@ function parseHeadersFile(text) {
 }
 
 /**
+ * Does a `_headers` rule path apply to this request path?
+ *
+ * Cloudflare matches `/*` for everything, an exact path for that path, and a
+ * trailing `*` as a prefix (e.g. `/assets/*`). Matching only `/*` and exact
+ * paths would silently ignore a prefix rule, and the gate would then be
+ * testing a different security policy than production.
+ */
+function ruleMatches(rulePath, urlPath) {
+  if (rulePath === "/*") return true;
+  if (rulePath.endsWith("*")) return urlPath.startsWith(rulePath.slice(0, -1));
+  return urlPath === rulePath;
+}
+
+/**
  * Serve apps/web/dist with dist/_headers applied — the same headers the
  * Cloudflare edge sends. Returns { origin, close }.
  */
@@ -81,7 +95,15 @@ export async function serveDist() {
   const rules = parseHeadersFile(readFileSync(headersPath, "utf8"));
   const server = createServer((req, res) => {
     const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
-    let fsPath = join(DIST, urlPath === "/" ? "index.html" : urlPath);
+    // resolve() collapses "..", and the prefix check refuses anything that
+    // still points outside dist. Without it a request for
+    // "/..%2f..%2fpackage.json" would read files above the served root.
+    const fsPath = resolve(DIST, "." + (urlPath === "/" ? "/index.html" : urlPath));
+    if (fsPath !== DIST && !fsPath.startsWith(DIST + sep)) {
+      res.writeHead(403, { "Content-Type": "text/plain" });
+      res.end("forbidden");
+      return;
+    }
     if (!existsSync(fsPath) || statSync(fsPath).isDirectory()) {
       res.writeHead(404, { "Content-Type": "text/plain" });
       res.end("not found");
@@ -89,7 +111,7 @@ export async function serveDist() {
     }
     const headers = { "Content-Type": MIME[extname(fsPath)] ?? "application/octet-stream" };
     for (const rule of rules) {
-      if (rule.path === "/*" || urlPath === rule.path) {
+      if (ruleMatches(rule.path, urlPath)) {
         for (const [k, v] of rule.headers) headers[k] = v;
       }
     }
@@ -99,7 +121,7 @@ export async function serveDist() {
   await new Promise((ok) => server.listen(0, "127.0.0.1", ok));
   return {
     origin: `http://127.0.0.1:${server.address().port}`,
-    close: () => server.close(),
+    close: () => new Promise((done) => server.close(() => done())),
   };
 }
 
@@ -175,7 +197,9 @@ export function makeReporter() {
     },
     finish() {
       console.log(failures ? `\n${failures} check(s) FAILED` : "\nall checks PASS");
-      process.exit(failures ? 1 : 0);
+      // Set the code rather than calling process.exit(): exiting immediately
+      // can truncate stdout when it is piped.
+      process.exitCode = failures ? 1 : 0;
     },
   };
 }

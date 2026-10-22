@@ -49,7 +49,8 @@ external Chrome, no CDP endpoint, no preview server needed.
 - [ ] C1 — content sanity: enriched thesis (L18/ANOVA), crusher (QFD/SolidWorks), SSC entry, address, email + LinkedIn + phone links, résumé download
 - [ ] A1 — contrast in BOTH schemes: every paragraph ≥ 4.5:1 vs its EFFECTIVE background;
       primary-ink paragraphs ≥ 7:1; muted labels ≥ 4.5:1 (per-viewport dark pass +
-      full-page dark pass; dark measurement waits 350ms for color transitions to settle)
+      full-page dark pass; dark measurement waits for the measured colours to
+      stop changing, rather than for a fixed delay)
 
 ## 3c. Security policy — `pnpm qa:csp` + `pnpm qa:csp:render` [A]
 

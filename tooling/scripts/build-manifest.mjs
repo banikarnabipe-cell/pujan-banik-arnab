@@ -125,38 +125,30 @@ const ANNOTATIONS = {
     a11y: ["nav[aria-label=Footer]"],
   },
   Button: {
-    pkg: "@pba/ui",
     notes:
       "M3 common button — Tailwind-native, token-bridged. Renders an <a> (no <button>), so it cannot be used for in-page actions.",
     a11y: ["focus-visible state layer", "global 3px focus-visible outline"],
   },
   Card: {
-    pkg: "@pba/ui",
     notes: "M3 card shell; consumer supplies the heading and body semantics.",
   },
   Chip: {
-    pkg: "@pba/ui",
     notes: "Renders an <a> when href is given, otherwise a <span>.",
   },
   Divider: {
-    pkg: "@pba/ui",
     notes: "<hr> — implicit role=separator.",
   },
   Microlabel: {
-    pkg: "@pba/ui",
     notes: "Uppercase mono label; decorative role.",
   },
   SectionHeading: {
-    pkg: "@pba/ui",
     notes:
       "<h2> with explicit line blocks — the Tailwind-native twin of the app-level Heading.astro.",
   },
   SceneShell: {
-    pkg: "@pba/ui",
     notes: "Tailwind-native scene wrapper — the twin of the app-level Scene.astro.",
   },
   AppWindow: {
-    pkg: "@pba/ui",
     notes: "inverse-surface chrome, traffic dots, level-2 elevation (--md-elevation-level2).",
   },
 };

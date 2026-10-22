@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$comment": "Component inventory — Pujan Banik Arnab portfolio (Astro). Machine-readable companion to design.md §6. jsBytes = client-side JS shipped by the component (Astro is static-first).",
   "project": "pujan-banik-arnab-portfolio",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "stack": {
     "framework": "astro@7",
     "language": "typescript-strict",

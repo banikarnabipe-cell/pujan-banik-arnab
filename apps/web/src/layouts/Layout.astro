@@ -29,29 +29,11 @@ const { title = `${site.brand.name} — ${site.brand.tagline}`, description = si
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
 
-    <script>
-      // Motion contract: reveal-on-enter. Transform/opacity only.
-      // v0.7.0 policy: NO reduced-motion gate — reveals animate for every
-      // user (owner directive, documented in docs/MOTION.md). The only
-      // fallback is the absence of IntersectionObserver (no-observe).
-      const root = document.documentElement;
-      const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
-      if (!("IntersectionObserver" in window)) {
-        root.classList.add("no-observe");
-      } else {
-        const io = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("is-in");
-                io.unobserve(entry.target);
-              }
-            }
-          },
-          { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
-        );
-        for (const el of targets) io.observe(el);
-      }
-    </script>
+    <!-- Reveal-on-enter observer. EXTERNAL file (public/reveal.js): Astro
+         auto-inlines small processed scripts, and inline scripts must be
+         sha256-pinned by the CSP in public/_headers — an unpinned inline
+         script is blocked on the edge and leaves [data-reveal] content
+         permanently invisible (v0.7.1 regression, see docs/HANDOFF.md). -->
+    <script is:inline src="/reveal.js" defer></script>
   </body>
 </html>

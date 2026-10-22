@@ -25,6 +25,9 @@ jobs:
       - name: Build (design-system → web)
         run: pnpm build
 
+      - name: CSP coverage gate (every inline script pinned)
+        run: pnpm qa:csp
+
       - name: Typecheck (astro check — 0 errors gate)
         run: pnpm typecheck
 
@@ -68,3 +71,7 @@ jobs:
             https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
           echo "live status: $code"
           [ "$code" = "200" ] || { echo "smoke test failed"; exit 1; }
+          body=$(curl -s https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
+          echo "$body" | grep -q "<h1" || { echo "smoke test: no <h1> content"; exit 1; }
+          echo "$body" | grep -q 'src="/reveal.js"' || { echo "smoke test: reveal.js missing"; exit 1; }
+          echo "content markers present"

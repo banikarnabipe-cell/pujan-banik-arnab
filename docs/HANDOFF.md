@@ -1,4 +1,4 @@
-# Handoff — Portfolio of Pujan Banik Arnab (v0.7.0, monorepo + Tailwind)
+# Handoff — Portfolio of Pujan Banik Arnab (v0.7.1, monorepo + Tailwind)
 
 This repo builds the personal portfolio of **Pujan Banik Arnab, Industrial &
 Production Engineer**, on the retriever-inspired structural foundation (no
@@ -8,6 +8,26 @@ live-verified from theretriever.app. **The hero is the ONLY dotted surface**,
 carrying the reference's **actual hero pattern — the animated canvas dot
 wave** (verified by live-browser forensics); every other section, panel and
 figure is flat canvas.
+
+**v0.7.1 changes (CSP fix — content invisible on production):**
+Production showed only background/nav/footer while every `[data-reveal]`
+block (hero, scenes, cards) stayed at `opacity: 0`. Root cause: the CSP in
+`apps/web/public/_headers` pinned a single inline-script hash, but Astro
+**auto-inlines small processed `<script>` blocks** — the reveal observer
+shipped as a second, unpinned inline script and was silently blocked on the
+edge, so the IntersectionObserver never ran. Local QA missed it because
+`astro preview` sends no CSP. Fix: (1) reveal logic moved OUT of Layout.astro
+into `apps/web/public/reveal.js` — external scripts are covered by
+`script-src 'self'`, zero hash maintenance; (2) `tooling/scripts/csp-hash.mjs`
+now pins **every** inline script and self-verifies; (3) new permanent gates:
+`tooling/scripts/verify-csp.mjs` (static, runs in CI) and
+`tooling/scripts/verify-csp-render.mjs` (serves dist with the real
+`_headers`, asserts zero console errors + 45/45 reveals + visible `<h1>`;
+run as `pnpm qa:csp` / `pnpm qa:csp:render`, also usable against a live URL
+via `SITE=<url>`); (4) CI deploy smoke test now requires real content
+markers, not just HTTP 200. Same-day context: Worker name aligned with the
+Cloudflare Git integration + `wrangler.jsonc` gained `build.command` so every
+deploy path self-builds (fixes the Workers Builds check).
 
 **v0.7.0 changes (pnpm monorepo + Tailwind v4 + motion policy):**
 (1) Restructured to a pnpm workspace: `apps/web` (Astro app),

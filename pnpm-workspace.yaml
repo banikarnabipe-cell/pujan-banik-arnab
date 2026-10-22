@@ -16,3 +16,15 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
+
+# Supply-chain protection (pnpm 12): only install packages published at least
+# 24h ago — except these, which our lockfile pins to same-day releases
+# (verified during the v0.7.0 install; re-check when bumping astro).
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@astrojs/check"
+  - "@astrojs/language-server"
+  - "@astrojs/markdown-satteri"
+  - "@astrojs/prism"
+  - "@astrojs/telemetry"
+  - astro

@@ -67,8 +67,9 @@ const dotwave = tokenSource.dotwave;
 </section>
 
 <!-- Byte-exact port of the reference's wave.js (provenance: docs/reference-assets/).
-     Paints every canvas.wave; animates only while visible; renders a still frame
-     under prefers-reduced-motion — the reference's own native behavior. -->
+     Paints every canvas.wave; animates only while visible. The upstream
+     prefers-reduced-motion still-frame branch is patched out — v0.7.0 motion
+     policy: the wave animates for every user (see docs/MOTION.md). -->
 <script is:inline defer src="/wave.js"></script>
 
 <style>

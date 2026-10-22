@@ -1,4 +1,4 @@
-# Design system — portfolio v0.7.0
+# Design system — portfolio v0.7.2
 
 Single source of truth: `packages/design-system/design-tokens.json` (W3C DTCG-style, Material 3 role
 architecture) → `pnpm tokens` → `packages/design-system/dist/tokens.css` (+ `dist/theme.css`, the Tailwind v4 `@theme inline` bridge) (generated; never
@@ -87,7 +87,7 @@ Pristine archives + md5s + license note: `docs/reference-assets/PROVENANCE.md`.
 
 ## Enforcement
 
-`tooling/scripts/verify-design-contract.mjs` (v0.7.0, 125 checks) encodes the contract:
+`tooling/scripts/verify-design-contract.mjs` (125 checks) encodes the contract:
 D1 canvas color in BOTH schemes, D2 wave presence/attrs/mask/paint/animation/
 opacity/color-per-scheme, D3 hero-only dotted surface, D4 overflow, D5 decay
 reuse, C1 content, A1 contrast in BOTH schemes (per-viewport dark pass +

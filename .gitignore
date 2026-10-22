@@ -20,16 +20,8 @@ credentials*.json
 *.log
 logs/
 
-# workspace-only artifacts (multi-agent workspace; not part of the published repo)
-agent-context/
-rea-agent/
+# QA evidence produced by the gates (tool-results/qa, ref-forensics, …)
 tool-results/
-download/
-upload/
-pr-work/
-worklog.md
-.mcp.json
-skills/
 
 # OS / editor
 .DS_Store

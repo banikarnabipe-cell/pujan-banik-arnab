@@ -14,9 +14,15 @@
    group + docs/reference-assets/).   
    ───────────────────────────────────────────────────────────────── */
 
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 /* v0.7.0 motion policy: no reduced-motion override — smooth scroll and all
    transitions run for every user (owner directive; see docs/MOTION.md). */
 
@@ -48,13 +54,39 @@ body {
   overflow: hidden;
 }
 
-img, svg { display: block; max-width: 100%; }
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
 
-h1, h2, h3, h4, p { margin: 0; }
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
 
-a { color: inherit; }
+/* Link reset. It lives in the `base` layer on purpose: global.css is
+   otherwise UNLAYERED, and unlayered rules beat every layered rule — so an
+   unlayered `a { color: inherit }` silently overrode Tailwind's colour
+   utilities (e.g. @pba/ui's `text-on-primary`), rendering the filled button
+   white-on-white. In `base` the utility layer wins again. */
+@layer base {
+  a {
+    color: inherit;
+  }
+}
 
-button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; }
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
 
 /* M3 focus ring: 3px primary outline, visible offset. */
 :focus-visible {
@@ -63,7 +95,10 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
   border-radius: var(--md-shape-none);
 }
 
-::selection { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+::selection {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
 
 /* Layout primitives */
 .container {
@@ -72,9 +107,15 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
   padding-inline: var(--gutter);
 }
 
-.scene { border-top: 1px solid var(--md-sys-color-outline-variant); }
-.scene > .container { padding-block: var(--scene-pad); }
-.scene--flush:first-of-type { border-top: 0; }
+.scene {
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+.scene > .container {
+  padding-block: var(--scene-pad);
+}
+.scene--flush:first-of-type {
+  border-top: 0;
+}
 
 /* M3 label role, tailored to the mono schematic voice */
 .microlabel {
@@ -109,8 +150,9 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
   background: var(--btn-bg);
   color: var(--btn-ink);
   isolation: isolate;
-  transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
-              border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  transition:
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 /* M3 state layer: content-colored veil at tokenized opacities. */
 .btn::after {
@@ -125,10 +167,18 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
   z-index: -1;
   mix-blend-mode: normal;
 }
-.btn:hover::after { opacity: var(--md-state-layer-hover); }
-.btn:focus-visible::after { opacity: var(--md-state-layer-focus); }
-.btn:active::after { opacity: var(--md-state-layer-pressed); }
-.btn:active { transform: translateY(1px); }
+.btn:hover::after {
+  opacity: var(--md-state-layer-hover);
+}
+.btn:focus-visible::after {
+  opacity: var(--md-state-layer-focus);
+}
+.btn:active::after {
+  opacity: var(--md-state-layer-pressed);
+}
+.btn:active {
+  transform: translateY(1px);
+}
 
 .btn--outlined {
   --btn-bg: transparent;
@@ -146,7 +196,11 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
 }
 
 /* Legacy variant aliases (Phase 1 names -> M3 variants) */
-.btn--ghost { --btn-bg: var(--md-sys-color-secondary-container); --btn-ink: var(--md-sys-color-on-secondary-container); --btn-edge: var(--md-sys-color-outline-variant); }
+.btn--ghost {
+  --btn-bg: var(--md-sys-color-secondary-container);
+  --btn-ink: var(--md-sys-color-on-secondary-container);
+  --btn-edge: var(--md-sys-color-outline-variant);
+}
 
 /* ── M3 cards (outlined + elevated) ─────────────────────────────── */
 .m3-card {
@@ -157,7 +211,7 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
 }
 .m3-card--elevated {
   border-color: transparent;
-  box-shadow: var(--md-elevation-1);
+  box-shadow: var(--md-elevation-level1);
   background: var(--md-sys-color-surface-container-low);
 }
 .m3-card--filled {
@@ -195,11 +249,19 @@ button { font: inherit; color: inherit; background: none; border: none; padding:
   pointer-events: none;
   z-index: -1;
 }
-.m3-chip:hover::after { opacity: var(--md-state-layer-hover); }
-.m3-chip:active::after { opacity: var(--md-state-layer-pressed); }
+.m3-chip:hover::after {
+  opacity: var(--md-state-layer-hover);
+}
+.m3-chip:active::after {
+  opacity: var(--md-state-layer-pressed);
+}
 
 /* ── M3 divider ─────────────────────────────────────────────────── */
-.m3-divider { border: 0; border-top: 1px solid var(--md-sys-color-outline-variant); margin: 0; }
+.m3-divider {
+  border: 0;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  margin: 0;
+}
 
 /* Scroll reveal contract: [data-reveal] enters via opacity+translate only.
    Gated behind html.js so no-JS visitors always see content.
@@ -213,8 +275,14 @@ html.js [data-reveal] {
     transform var(--dur-reveal) var(--md-sys-motion-easing-standard-decelerate);
   transition-delay: calc(var(--reveal-order, 0) * var(--stagger-step));
 }
-html.js [data-reveal].is-in { opacity: 1; transform: none; }
-html.no-observe [data-reveal] { opacity: 1 !important; transform: none !important; }
+html.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+html.no-observe [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+}
 
 .skip-link {
   position: absolute;
@@ -230,4 +298,6 @@ html.no-observe [data-reveal] { opacity: 1 !important; transform: none !importan
   letter-spacing: var(--md-sys-type-label-medium-tracking);
   z-index: 100;
 }
-.skip-link:focus-visible { left: 0; }
+.skip-link:focus-visible {
+  left: 0;
+}

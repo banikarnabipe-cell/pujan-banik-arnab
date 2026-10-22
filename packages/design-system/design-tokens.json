@@ -1,10 +1,12 @@
 {
   "$schema": "https://tr.designtokens.org/format/",
-  "$description": "Design tokens — single source of truth. Material 3 (Material You / M3 Expressive) role architecture on a neutral canvas anchored to the reference site in BOTH color schemes: light surface #ECECEC and dark surface #1E1E1E (exact theretriever.app body backgrounds, extracted from live DOM with prefers-color-scheme emulation 2026-10-22 — the reference is dark-first: :root carries the dark palette, light arrives via @media (prefers-color-scheme: light)). Pure-neutral gray ramp, ink primary, mono schematic voice. The hero dot texture is the EXACT reference animated canvas wave (see dotwave). Compiled to src/styles/tokens.css via `npm run tokens` (scripts/build-tokens.mjs). NEVER hand-edit tokens.css.",
-  "$generator": "scripts/build-tokens.mjs",
+  "$description": "Design tokens — single source of truth. Material 3 (Material You / M3 Expressive) role architecture on a neutral canvas anchored to the reference site in BOTH color schemes: light surface #ECECEC and dark surface #1E1E1E (exact theretriever.app body backgrounds, extracted from live DOM with prefers-color-scheme emulation 2026-10-22 — the reference is dark-first: :root carries the dark palette, light arrives via @media (prefers-color-scheme: light)). Pure-neutral gray ramp, ink primary, mono schematic voice. The hero dot texture is the EXACT reference animated canvas wave (see dotwave). Compiled to packages/design-system/dist/tokens.css and dist/theme.css via `pnpm tokens` (packages/design-system/build-tokens.mjs). NEVER hand-edit the generated CSS.",
+  "$generator": "packages/design-system/build-tokens.mjs",
   "mdSysColor": {
     "$type": "color",
-    "$extensions": { "com.material.material3": "color roles, neutral baseline (canvas = reference #ECECEC, primary = ink)" },
+    "$extensions": {
+      "com.material.material3": "color roles, neutral baseline (canvas = reference #ECECEC, primary = ink)"
+    },
     "primary": { "$value": "#131313" },
     "onPrimary": { "$value": "#f4f4f4" },
     "primaryContainer": { "$value": "#e2e2e2" },
@@ -42,7 +44,9 @@
   },
   "mdSysColorDark": {
     "$type": "color",
-    "$extensions": { "com.material.material3": "dark scheme color roles, anchored to the EXACT reference dark palette (theretriever.app :root defaults, verified live 2026-10-22 via headless-Chrome dark emulation + network CSS fetch): surface = ref --bg #1E1E1E, surfaceContainerLowest = ref --panel #262626, onSurface = ref --text #FFFFFF, onSurfaceVariant = ref --text-2 #9A9A9A, outlineVariant = ref --separator #343434, tertiary = ref --amber #D69957. Container ramp steps (low/container/high/highest) are tuned darker than M3 defaults so on-surface-variant #9A9A9A keeps >= 4.5:1 on every container (AA) — enforced by the A1 dark contrast gates. inverseSurface stays dark (#262626) on purpose: the hero window chrome is dark in BOTH schemes, matching the reference's dark window. Filled buttons invert exactly like the reference's .btn.primary (background var(--text), color var(--bg)): white fill + #1E1E1E ink in dark. Emitted as @media (prefers-color-scheme: dark) { :root { ... } } — same trigger the reference uses (inverted: the reference is dark-first with a light override; behavior is identical because prefers-color-scheme always resolves to light OR dark)." },
+    "$extensions": {
+      "com.material.material3": "dark scheme color roles, anchored to the EXACT reference dark palette (theretriever.app :root defaults, verified live 2026-10-22 via headless-Chrome dark emulation + network CSS fetch): surface = ref --bg #1E1E1E, surfaceContainerLowest = ref --panel #262626, onSurface = ref --text #FFFFFF, onSurfaceVariant = ref --text-2 #9A9A9A, outlineVariant = ref --separator #343434, tertiary = ref --amber #D69957. Container ramp steps (low/container/high/highest) are tuned darker than M3 defaults so on-surface-variant #9A9A9A keeps >= 4.5:1 on every container (AA) — enforced by the A1 dark contrast gates. inverseSurface stays dark (#262626) on purpose: the hero window chrome is dark in BOTH schemes, matching the reference's dark window. Filled buttons invert exactly like the reference's .btn.primary (background var(--text), color var(--bg)): white fill + #1E1E1E ink in dark. Emitted as @media (prefers-color-scheme: dark) { :root { ... } } — same trigger the reference uses (inverted: the reference is dark-first with a light override; behavior is identical because prefers-color-scheme always resolves to light OR dark)."
+    },
     "primary": { "$value": "#ffffff" },
     "onPrimary": { "$value": "#1e1e1e" },
     "primaryContainer": { "$value": "#3a3a3a" },
@@ -108,21 +112,116 @@
   "mdSysTypography": {
     "$type": "typography",
     "$description": "M3 type scale, tailored: display/headline keep retriever-like negative tracking; label roles render in the mono schematic voice.",
-    "fontFamilyBody": { "$value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" },
-    "fontFamilyLabel": { "$value": "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" },
-    "displayLarge": { "$value": { "fontSize": "clamp(2.4rem, 1rem + 6vw, 4.5rem)", "lineHeight": 1.05, "fontWeight": 700, "letterSpacing": "-0.035em" } },
-    "displaySmall": { "$value": { "fontSize": "2.25rem", "lineHeight": 1.1, "fontWeight": 700, "letterSpacing": "-0.03em" } },
-    "headlineLarge": { "$value": { "fontSize": "clamp(1.75rem, 1.15rem + 2.6vw, 2.7rem)", "lineHeight": 1.05, "fontWeight": 500, "letterSpacing": "-0.02em" } },
-    "headlineMedium": { "$value": { "fontSize": "1.6rem", "lineHeight": 1.15, "fontWeight": 500, "letterSpacing": "-0.02em" } },
-    "titleLarge": { "$value": { "fontSize": "1.25rem", "lineHeight": 1.3, "fontWeight": 500, "letterSpacing": "-0.01em" } },
-    "titleMedium": { "$value": { "fontSize": "1.1rem", "lineHeight": 1.45, "fontWeight": 500, "letterSpacing": "0" } },
-    "titleSmall": { "$value": { "fontSize": "0.9375rem", "lineHeight": 1.45, "fontWeight": 500, "letterSpacing": "0.01em" } },
-    "bodyLarge": { "$value": { "fontSize": "1.0625rem", "lineHeight": 1.6, "fontWeight": 400, "letterSpacing": "0" } },
-    "bodyMedium": { "$value": { "fontSize": "0.9375rem", "lineHeight": 1.55, "fontWeight": 400, "letterSpacing": "0" } },
-    "bodySmall": { "$value": { "fontSize": "0.875rem", "lineHeight": 1.5, "fontWeight": 400, "letterSpacing": "0" } },
-    "labelLarge": { "$value": { "fontSize": "0.875rem", "lineHeight": 1.2, "fontWeight": 500, "letterSpacing": "0.08em" } },
-    "labelMedium": { "$value": { "fontSize": "0.78rem", "lineHeight": 1.2, "fontWeight": 400, "letterSpacing": "0.08em" } },
-    "labelSmall": { "$value": { "fontSize": "0.72rem", "lineHeight": 1.2, "fontWeight": 400, "letterSpacing": "0.06em" } }
+    "fontFamilyBody": {
+      "$value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    },
+    "fontFamilyLabel": {
+      "$value": "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
+    },
+    "displayLarge": {
+      "$value": {
+        "fontSize": "clamp(2.4rem, 1rem + 6vw, 4.5rem)",
+        "lineHeight": 1.05,
+        "fontWeight": 700,
+        "letterSpacing": "-0.035em"
+      }
+    },
+    "displaySmall": {
+      "$value": {
+        "fontSize": "2.25rem",
+        "lineHeight": 1.1,
+        "fontWeight": 700,
+        "letterSpacing": "-0.03em"
+      }
+    },
+    "headlineLarge": {
+      "$value": {
+        "fontSize": "clamp(1.75rem, 1.15rem + 2.6vw, 2.7rem)",
+        "lineHeight": 1.05,
+        "fontWeight": 500,
+        "letterSpacing": "-0.02em"
+      }
+    },
+    "headlineMedium": {
+      "$value": {
+        "fontSize": "1.6rem",
+        "lineHeight": 1.15,
+        "fontWeight": 500,
+        "letterSpacing": "-0.02em"
+      }
+    },
+    "titleLarge": {
+      "$value": {
+        "fontSize": "1.25rem",
+        "lineHeight": 1.3,
+        "fontWeight": 500,
+        "letterSpacing": "-0.01em"
+      }
+    },
+    "titleMedium": {
+      "$value": {
+        "fontSize": "1.1rem",
+        "lineHeight": 1.45,
+        "fontWeight": 500,
+        "letterSpacing": "0"
+      }
+    },
+    "titleSmall": {
+      "$value": {
+        "fontSize": "0.9375rem",
+        "lineHeight": 1.45,
+        "fontWeight": 500,
+        "letterSpacing": "0.01em"
+      }
+    },
+    "bodyLarge": {
+      "$value": {
+        "fontSize": "1.0625rem",
+        "lineHeight": 1.6,
+        "fontWeight": 400,
+        "letterSpacing": "0"
+      }
+    },
+    "bodyMedium": {
+      "$value": {
+        "fontSize": "0.9375rem",
+        "lineHeight": 1.55,
+        "fontWeight": 400,
+        "letterSpacing": "0"
+      }
+    },
+    "bodySmall": {
+      "$value": {
+        "fontSize": "0.875rem",
+        "lineHeight": 1.5,
+        "fontWeight": 400,
+        "letterSpacing": "0"
+      }
+    },
+    "labelLarge": {
+      "$value": {
+        "fontSize": "0.875rem",
+        "lineHeight": 1.2,
+        "fontWeight": 500,
+        "letterSpacing": "0.08em"
+      }
+    },
+    "labelMedium": {
+      "$value": {
+        "fontSize": "0.78rem",
+        "lineHeight": 1.2,
+        "fontWeight": 400,
+        "letterSpacing": "0.08em"
+      }
+    },
+    "labelSmall": {
+      "$value": {
+        "fontSize": "0.72rem",
+        "lineHeight": 1.2,
+        "fontWeight": 400,
+        "letterSpacing": "0.06em"
+      }
+    }
   },
   "mdSysMotion": {
     "$type": "other",

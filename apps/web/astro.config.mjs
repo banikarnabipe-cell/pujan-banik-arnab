@@ -14,9 +14,6 @@ export default defineConfig({
       allowedHosts: true,
       watch: {
         ignored: [
-          "**/agent-context/**",
-          "**/rea-agent/**",
-          "**/skills/**",
           "**/tool-results/**",
           "**/download/**",
           "**/upload/**",

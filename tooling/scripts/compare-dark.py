@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Side-by-side dark-mode comparison: reference vs our implementation."""
+import os
 from PIL import Image, ImageDraw
 
-base = "/home/z/my-project/tool-results"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+base = os.environ.get("TOOL_RESULTS", os.path.join(REPO_ROOT, "tool-results"))
 pairs = [
     (f"{base}/darkmode-forensics/ref-dark-hero-1440.png",
      f"{base}/darkmode-impl/ours-dark-hero-1440.png",

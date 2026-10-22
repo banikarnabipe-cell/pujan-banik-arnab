@@ -7,7 +7,7 @@ on:
 
 jobs:
   verify:
-    name: install → build → typecheck → deploy dry-run
+    name: install → build → QA gates → typecheck → deploy dry-run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,22 @@ jobs:
 
       - name: Typecheck (astro check — 0 errors gate)
         run: pnpm typecheck
+
+      - name: Component manifest is up to date
+        run: pnpm manifest:check
+
+      # Browser gates. They use the runner's pre-installed Chrome via
+      # playwright-core's `channel: "chrome"`, so no browser download is
+      # needed. The gates serve apps/web/dist with the real dist/_headers
+      # applied, so they exercise the production Content-Security-Policy.
+      - name: CSP render gate (production headers, no invisible content)
+        run: pnpm qa:csp:render
+
+      - name: Environment emulation gate (reduced-motion / no-JS / landscape)
+        run: pnpm qa:env
+
+      - name: Design contract gate (125 checks, both colour schemes)
+        run: pnpm qa:design
 
       - name: Validate Cloudflare deployment (dry-run)
         run: pnpm exec wrangler deploy --dry-run

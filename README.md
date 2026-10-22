@@ -1,4 +1,4 @@
-# pujan-banik-arnab-portfolio (v0.7.0)
+# pujan-banik-arnab-portfolio (v0.7.2)
 
 Personal portfolio of **Pujan Banik Arnab — Industrial & Production Engineer**.
 pnpm monorepo · Astro 7 static app · Tailwind CSS v4 bridged onto a Material 3
@@ -41,28 +41,54 @@ pnpm format                # prettier (config in packages/config)
 
 ## Commands
 
-| Script | What it does |
-|---|---|
-| `pnpm tokens` | compile `design-tokens.json` → `dist/tokens.css` + `dist/theme.css` |
-| `pnpm build` | recursive, topological build of all packages |
-| `pnpm typecheck` / `pnpm lint` | `astro check` on `@pba/web` |
-| `pnpm qa:design` | 125-check design contract (both color schemes, hero wave, contrast, overflow, content) — needs preview server + CDP Chrome |
-| `pnpm qa:env` | reduced-motion / no-JS / landscape gates |
-| `pnpm qa:visual` | 8-viewport full-page screenshot sweep |
-| `pnpm deploy` | build + `wrangler deploy` (production, top-level env) |
-| `pnpm deploy:preview` | build + deploy to the preview Worker |
-| `pnpm resume` | regenerate `apps/web/public/resume.pdf` from the CV |
+| Script                         | What it does                                                                                          |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `pnpm tokens`                  | compile `design-tokens.json` → `dist/tokens.css` + `dist/theme.css`                                   |
+| `pnpm build`                   | recursive, topological build of all packages                                                          |
+| `pnpm build:timings`           | build with Astro's timing report (where the build time went)                                          |
+| `pnpm typecheck` / `pnpm lint` | `astro check` on `@pba/web` (fails on warnings, not just errors)                                      |
+| `pnpm preview`                 | serve the built site locally                                                                          |
+| `pnpm preview:bg`              | start the preview server in the background (Astro 7.2+)                                               |
+| `pnpm preview:status`          | is the background preview running? (URL, PID, uptime)                                                 |
+| `pnpm preview:logs`            | print the background preview server's log                                                             |
+| `pnpm preview:stop`            | stop the background preview server                                                                    |
+| `pnpm astro:info`              | report the Astro/Node/Adapter/Integration environment                                                 |
+| `pnpm astro:sync`              | regenerate the Astro TypeScript types                                                                 |
+| `pnpm qa:csp`                  | every inline script is sha256-pinned in `_headers` (static gate)                                      |
+| `pnpm qa:csp:render`           | serves `dist` with the real `_headers` and asserts nothing is blocked (browser gate)                  |
+| `pnpm qa:env`                  | reduced-motion / no-JS / landscape gates (browser gate)                                               |
+| `pnpm qa:design`               | 125-check design contract (both color schemes, hero wave, contrast, overflow, content) (browser gate) |
+| `pnpm qa:devices`              | iPhone 14 / Pixel 7 emulation sweep + overflow check                                                  |
+| `pnpm qa:visual`               | 8-viewport full-page screenshot sweep                                                                 |
+| `pnpm qa`                      | all four browser-free + browser gates in sequence                                                     |
+| `pnpm manifest`                | regenerate `components.manifest.json` from the source files                                           |
+| `pnpm manifest:check`          | fail if the committed manifest is out of date                                                         |
+| `pnpm csp:hash`                | re-pin the inline script hashes after touching the boot script                                        |
+| `pnpm deploy`                  | build + `wrangler deploy` (production, top-level env)                                                 |
+| `pnpm deploy:preview`          | build + publish a Cloudflare Preview for the current branch                                           |
+| `pnpm resume`                  | regenerate `apps/web/public/resume.pdf` from the CV                                                   |
+
+The browser gates need `playwright-core` (a devDependency) and an installed
+Chrome or Edge. They drive the browser themselves and serve `apps/web/dist`
+with the production `_headers` applied — no external Chrome, no CDP endpoint
+and no preview server needed. Override the browser with `CHROME_BIN` or
+`PW_CHANNEL` (`chrome`, `msedge`).
+
+`pnpm resume` needs Python with `reportlab` and the FreeSerif font family.
+On Linux the fonts live at `/usr/share/fonts/truetype/freefont`; elsewhere set
+`FREESERIF_DIR` to the folder holding `FreeSerif.ttf`, and call `python`
+instead of `python3` if that is what your machine has.
 
 ## Docs
 
-| Doc | Contents |
-|---|---|
-| `DESIGN_SYSTEM.md` | Design language, M3 adaptation, token architecture, components, a11y, deployment |
-| `docs/HANDOFF.md` | Versioned change log + architecture invariants |
-| `docs/MOTION.md` | Motion contract (v0.7.0: no reduced-motion suppression) |
-| `docs/QA-CHECKLIST.md` | Manual + automated QA matrix |
-| `docs/reference-assets/PROVENANCE.md` | Byte-exact reference assets: hashes, deltas, licenses stance |
-| `components.manifest.json` | Machine-readable component inventory |
+| Doc                                   | Contents                                                                         |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| `DESIGN_SYSTEM.md`                    | Design language, M3 adaptation, token architecture, components, a11y, deployment |
+| `docs/HANDOFF.md`                     | Versioned change log + architecture invariants                                   |
+| `docs/MOTION.md`                      | Motion contract (v0.7.0: no reduced-motion suppression)                          |
+| `docs/QA-CHECKLIST.md`                | Manual + automated QA matrix                                                     |
+| `docs/reference-assets/PROVENANCE.md` | Byte-exact reference assets: hashes, deltas, licenses stance                     |
+| `components.manifest.json`            | Machine-readable component inventory                                             |
 
 ## Non-negotiables
 
@@ -76,3 +102,9 @@ pnpm format                # prettier (config in packages/config)
 5. Security headers + CSP script hash live in `apps/web/public/_headers`;
    after changing the inline bootstrap script run
    `node tooling/scripts/csp-hash.mjs` and rebuild.
+6. `apps/web/src/styles/tailwind.css` must keep its `@source` path pointing at
+   `packages/ui/src`. That path is relative to the CSS file, so it needs FOUR
+   levels up. With the wrong depth Tailwind scans nothing and the whole
+   `@pba/ui` package ships unstyled (v0.7.2 fix).
+7. `components.manifest.json` is generated — run `pnpm manifest` after adding
+   or renaming a component; CI fails if it drifts.

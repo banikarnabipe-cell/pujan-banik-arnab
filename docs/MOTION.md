@@ -5,7 +5,7 @@ attention between related things, or explains state. No decorative loops.
 
 > **v0.7.0 policy change (owner directive): reduced-motion suppression is
 > REMOVED.** The site animates identically for every user — `prefers-
-> reduced-motion: reduce` no longer zeroes duration tokens, disables the
+reduced-motion: reduce` no longer zeroes duration tokens, disables the
 > reveal observer, or still-frames the hero wave. JS is used deliberately for
 > visual enhancement (reveal orchestration, the ambient hero wave). The a11y
 > trade-off is explicit and accepted: WCAG 2.3.3 (Animation from
@@ -14,13 +14,13 @@ attention between related things, or explains state. No decorative loops.
 > to keep the vestibular risk low while following the owner's direction.
 > Re-enable coverage later by reintroducing the token override in
 > `packages/design-system/build-tokens.mjs` (one block) + the observer gate
-> in `Layout.astro` — the checks in `verify-env-emulation.mjs` flip back
-> accordingly.
+> in `apps/web/public/reveal.js` — the checks in `verify-env-emulation.mjs`
+> flip back accordingly.
 
 ## Token layer
 
 Durations and easings come from `design-tokens.json` (`mdSysMotion`) →
-`src/styles/tokens.css`:
+`packages/design-system/dist/tokens.css`:
 
 - `--md-sys-motion-duration-short2/4` (100/200ms) — state layers, color, icon morphs
 - `--md-sys-motion-duration-medium2` (300ms) — hover transitions, chip/cell color
@@ -41,7 +41,11 @@ for state layers, which are paint-cheap and non-layout). Never animate layout:
 1. **Scroll reveals** — `[data-reveal]`: opacity 0→1 + translateY(12px→0),
    500ms decelerate, staggered 0.09s via `--reveal-order`. Gated behind
    `html.js` (set inline in `<head>`); without JS everything is visible.
-   Trigger: one `IntersectionObserver` in `Layout.astro` (unobserve after reveal).
+   Trigger: one `IntersectionObserver` in `apps/web/public/reveal.js`
+   (unobserve after reveal). It is an EXTERNAL file on purpose: Astro
+   auto-inlines small processed `<script>` blocks, and an unpinned inline
+   script is blocked by the production CSP, which left every `[data-reveal]`
+   element invisible (v0.7.1 incident).
 2. **Reduced motion — REMOVED (v0.7.0 policy)** — no token override, no
    observer gate, no still-framing. The hero wave animates for every user
    (`wave.js` upstream branch patched out — documented delta in

@@ -1,4 +1,4 @@
-# DESIGN_SYSTEM.md — Pujan Banik Arnab portfolio (v0.7.0)
+# DESIGN_SYSTEM.md - Pujan Banik Arnab portfolio (v0.7.2)
 
 The design language was extracted from [theretriever.app](https://theretriever.app/)
 as **reusable, non-copyrightable patterns only** — hierarchy, spacing rhythm,
@@ -37,7 +37,7 @@ generic Material clone:
 - **Dark-first parity**: the reference ships `:root` = dark with a
   `prefers-color-scheme: light` override; this repo emits the equivalent
   runtime behavior (`:root` = light values, `@media (prefers-color-scheme:
-  dark)` overrides on the same role properties). Runtime result is identical:
+dark)` overrides on the same role properties). Runtime result is identical:
   the OS setting always resolves exactly one scheme. Verified value-equal to
   the reference palette (surface `#1E1E1E`, panel `#262626`, text `#FFFFFF`,
   muted `#9A9A9A`, separator `#343434`, amber `#D69957`).
@@ -61,22 +61,23 @@ packages/design-system/design-tokens.json     ← EDIT HERE (W3C DTCG)
 
 `theme.css` maps every role onto Tailwind namespaces **by reference**:
 
-| Tailwind namespace | Resolves to | Example utility |
-|---|---|---|
-| `--color-*` | `var(--md-sys-color-*)` | `bg-surface-container-lowest`, `text-on-surface-variant` |
-| `--radius-*` | `var(--md-shape-*)` | `rounded-xs`, `rounded-md` |
-| `--shadow-level*` | `var(--md-elevation-*)` | `shadow-level1` |
-| `--text-*` (+`--line-height/--font-weight/--letter-spacing`) | `var(--md-sys-type-*)` | `text-headline-large`, `text-label-medium` |
-| `--font-sys-sans/mono` | `var(--font-sans)` / `var(--font-mono)` | `font-sys-mono` |
-| `--breakpoint-xs…4xl` | QA widths 320/375/414/768/1024/1280/1440/1920 | `max-lg:…` |
-| `--ease-standard/decelerate/…` | `var(--md-sys-motion-easing-*)` | `ease-standard` |
-| durations | plain tokens | `duration-(--md-sys-motion-duration-medium2)` |
+| Tailwind namespace                                           | Resolves to                                   | Example utility                                          |
+| ------------------------------------------------------------ | --------------------------------------------- | -------------------------------------------------------- |
+| `--color-*`                                                  | `var(--md-sys-color-*)`                       | `bg-surface-container-lowest`, `text-on-surface-variant` |
+| `--radius-*`                                                 | `var(--md-shape-*)`                           | `rounded-xs`, `rounded-md`                               |
+| `--shadow-level*`                                            | `var(--md-elevation-*)`                       | `shadow-level1`                                          |
+| `--text-*` (+`--line-height/--font-weight/--letter-spacing`) | `var(--md-sys-type-*)`                        | `text-headline-large`, `text-label-medium`               |
+| `--font-sys-sans/mono`                                       | `var(--font-sans)` / `var(--font-mono)`       | `font-sys-mono`                                          |
+| `--breakpoint-xs…4xl`                                        | QA widths 320/375/414/768/1024/1280/1440/1920 | `max-lg:…`                                               |
+| `--ease-standard/decelerate/…`                               | `var(--md-sys-motion-easing-*)`               | `ease-standard`                                          |
+| durations                                                    | plain tokens                                  | `duration-(--md-sys-motion-duration-medium2)`            |
 
 Because the bridge uses `@theme inline`, utilities embed the **runtime**
 `var()` — the dark-scheme media overrides cascade through every Tailwind
 utility with zero duplication. **No hard-coded hex in components. Ever.**
 
 Notes:
+
 - Tailwind v4 is adopted **without preflight** — the app reset in
   `apps/web/src/styles/global.css` is authoritative (preflight would silently
   change rendering and break the contract gate).
@@ -110,16 +111,16 @@ Consolas` mono. Utilities: `text-display-large … text-label-small`.
 
 Shared (`@pba/ui`, Tailwind-native, token-bridged):
 
-| Component | Variants | Notes |
-|---|---|---|
-| `Button` | filled / outlined / tonal / text | mono label, state-layer veil, press shift |
-| `Card` | outlined / elevated / filled | surface-container roles |
-| `Chip` | link or static | assist/filter chip |
-| `Divider` | — | hairline |
-| `Microlabel` | — | mono kicker/label |
-| `SectionHeading` | — | headline-large line blocks |
-| `SceneShell` | divider toggle | section wrapper + container + kicker |
-| `AppWindow` | tone: live / passive | moved to `@pba/ui` verbatim (token-driven scoped styles; Tailwind conversion candidate) |
+| Component        | Variants                         | Notes                                                                                   |
+| ---------------- | -------------------------------- | --------------------------------------------------------------------------------------- |
+| `Button`         | filled / outlined / tonal / text | mono label, state-layer veil, press shift                                               |
+| `Card`           | outlined / elevated / filled     | surface-container roles                                                                 |
+| `Chip`           | link or static                   | assist/filter chip                                                                      |
+| `Divider`        | —                                | hairline                                                                                |
+| `Microlabel`     | —                                | mono kicker/label                                                                       |
+| `SectionHeading` | —                                | headline-large line blocks                                                              |
+| `SceneShell`     | divider toggle                   | section wrapper + container + kicker                                                    |
+| `AppWindow`      | tone: live / passive             | moved to `@pba/ui` verbatim (token-driven scoped styles; Tailwind conversion candidate) |
 
 App-level (portfolio-specific, migrate opportunistically): Header, Hero,
 FactsStrip, AboutScene, SkillsScene, ProjectsScene, ExperienceScene,
@@ -135,6 +136,27 @@ pseudo-element machinery), props typed `readonly …? | undefined` (repo uses
 `exactOptionalPropertyTypes`), then consume via
 `import X from "@pba/ui/components/X.astro"`. Run `pnpm typecheck` +
 `pnpm qa:design`.
+
+**Tailwind only generates utilities for files it scans.** `apps/web` is the
+Vite root, so `packages/ui` is declared explicitly in
+`apps/web/src/styles/tailwind.css`:
+
+```css
+@source "../../../../packages/ui/src"; /* FOUR levels up — relative to this file */
+```
+
+That path is relative to the CSS file (`apps/web/src/styles`), so reaching the
+repo root takes four `..`. With the wrong depth Tailwind scans a directory
+that does not exist, generates **no** utility classes, and the whole `@pba/ui`
+package ships unstyled — the page still renders (the app-level CSS is
+unlayered and wins) but the shared components look like plain links. If a
+`@pba/ui` component ever looks unstyled, check this path first.
+
+`components.manifest.json` is **generated** by
+`tooling/scripts/build-manifest.mjs` from the source files (paths, component
+list and props are derived; prose annotations live in that script). Run
+`pnpm manifest` after adding or renaming a component; CI runs
+`pnpm manifest:check` and fails on drift.
 
 ## 7. Accessibility
 
@@ -173,24 +195,41 @@ decision; add npm/yarn lockfiles.
 - Target: **Cloudflare Workers (static assets)** — `wrangler.jsonc` at repo
   root; assets dir `./apps/web/dist`; no bindings; no secrets (fully static).
 - `pnpm deploy` → production (top-level env); `pnpm deploy:preview` →
-  `pujan-banik-arnab-portfolio-preview` Worker; `pnpm deploy:dry` → local
-  validation.
+  a Cloudflare **Preview** of the current branch (served at
+  `<branch>-<worker>.workers.dev`); `pnpm deploy:dry` → local validation.
+- **Preview builds need the `previews` block** in `wrangler.jsonc`. Cloudflare
+  runs a Preview build for every branch that is not the production branch, via
+  `wrangler preview`, and that command refuses to run without it — the build
+  then fails in about a second, before the build command even runs, and the
+  "Workers Builds" check is red on every pull request. The block can be empty:
+  this Worker has no preview-specific variables or bindings.
+- **Observability is off** (`"observability": { "enabled": false }`). This
+  Worker ships static assets only, and Cloudflare rejects a deploy that tries
+  to attach Workers Logs / Tail Workers to such a Worker.
 - Security headers + CSP live in `apps/web/public/_headers` (served from the
   asset root). The inline bootstrap script is pinned by sha256 — after
   changing it: `pnpm build && node tooling/scripts/csp-hash.mjs && pnpm build`.
 - Custom domain + SSL: Cloudflare dashboard → Worker → Domains; headers and
   caching are asset-managed, no extra config.
 - Deployment checklist: `pnpm install && pnpm build && pnpm typecheck &&
-  pnpm lint && pnpm test && pnpm deploy:dry` → preview deploy → smoke test
+pnpm lint && pnpm test && pnpm qa && pnpm deploy:dry` → preview deploy → smoke test
   (hero wave animates, dark/light switch, FAQ opens, résumé downloads) →
   production deploy → post-deploy smoke test.
 
 ## 11. QA gates
 
-| Gate | Scope |
-|---|---|
-| `pnpm qa:design` | 125 checks: exact canvases both schemes, hero wave attrs/mask/paint/animation, hero-only dots, decay SVG reuse, overflow ×8 viewports, content, contrast both schemes |
-| `pnpm qa:env` | reduced-motion policy (tokens intact, wave animates), no-JS visibility, landscape overflow |
-| `pnpm qa:devices` | iPhone 14 + Pixel 7 emulation (CDP :46049) |
-| `pnpm qa:visual` | 8-viewport full-page captures → `tool-results/qa/` |
-| `pnpm typecheck` | astro check, 0 errors |
+| Gate                  | Scope                                                                                                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm qa:csp`         | every inline script sha256-pinned; no stale pins; `/reveal.js` external                                                                                               |
+| `pnpm qa:csp:render`  | renders `dist` under the real `_headers`: no console errors, no failed requests, 45/45 reveals, hero `<h1>` visible                                                   |
+| `pnpm qa:design`      | 125 checks: exact canvases both schemes, hero wave attrs/mask/paint/animation, hero-only dots, decay SVG reuse, overflow ×8 viewports, content, contrast both schemes |
+| `pnpm qa:env`         | reduced-motion policy (tokens intact, wave animates), no-JS visibility, landscape overflow                                                                            |
+| `pnpm qa:devices`     | iPhone 14 + Pixel 7 emulation (DPR + mobile UA applied)                                                                                                               |
+| `pnpm qa:visual`      | 8-viewport full-page captures → `tool-results/qa/`                                                                                                                    |
+| `pnpm manifest:check` | `components.manifest.json` still matches the source files                                                                                                             |
+| `pnpm typecheck`      | astro check, 0 errors                                                                                                                                                 |
+
+The browser gates use `playwright-core` (a devDependency) plus an installed
+Chrome/Edge — `CHROME_BIN` or `PW_CHANNEL` override the binary. They serve
+`apps/web/dist` with the production `_headers` applied, so they exercise the
+deployed security policy rather than a header-less preview server.

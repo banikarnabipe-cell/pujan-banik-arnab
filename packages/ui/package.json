@@ -1,7 +1,7 @@
 {
   "name": "@pba/ui",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.7.2",
   "private": true,
   "description": "Shared Material 3-inspired UI components (Astro source components, Tailwind-native styling, token-driven).",
   "exports": {

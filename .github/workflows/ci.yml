@@ -7,14 +7,26 @@ on:
 
 jobs:
   verify:
-    name: install → build → typecheck → deploy dry-run
+    name: install → build → QA gates → typecheck → deploy dry-run
     runs-on: ubuntu-latest
+    env:
+      # Astro docs recommend disabling telemetry in CI.
+      ASTRO_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
+      # Corepack downloads the pinned pnpm binary on every run. pnpm 12 ships
+      # as a native binary (~50MB) and the download has a 30s timeout, so a
+      # slow runner fails the job before anything is built. Cache it, keyed on
+      # package.json because that is where the pin lives.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/node/corepack
+          key: corepack-${{ runner.os }}-${{ hashFiles('package.json') }}
 
       - name: Enable pnpm (version pinned via packageManager)
         run: corepack enable pnpm
@@ -31,8 +43,38 @@ jobs:
       - name: Typecheck (astro check — 0 errors gate)
         run: pnpm typecheck
 
+      - name: Component manifest is up to date
+        run: pnpm manifest:check
+
+      # Browser gates. They use the runner's pre-installed Chrome via
+      # playwright-core's `channel: "chrome"`, so no browser download is
+      # needed. The gates serve apps/web/dist with the real dist/_headers
+      # applied, so they exercise the production Content-Security-Policy.
+      - name: CSP render gate (production headers, no invisible content)
+        run: pnpm qa:csp:render
+
+      - name: Environment emulation gate (reduced-motion / no-JS / landscape)
+        run: pnpm qa:env
+
+      - name: Design contract gate (125 checks, both colour schemes)
+        run: pnpm qa:design
+
+      - name: Verify Cloudflare credentials
+        # Skipped for pull requests from forks, where secrets are not exposed.
+        # The check reads the env context, not `secrets` — GitHub does not
+        # allow the secrets context in a step's `if` condition, and using it
+        # there makes the whole workflow fail to parse.
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        run: pnpm exec wrangler whoami
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Validate Cloudflare deployment (dry-run)
         run: pnpm exec wrangler deploy --dry-run
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   # Production deploy from the canonical branch, after verification passes.
   # Credentials come exclusively from encrypted Actions secrets
@@ -52,6 +94,15 @@ jobs:
         with:
           node-version: 24
 
+      # Corepack downloads the pinned pnpm binary on every run. pnpm 12 ships
+      # as a native binary (~50MB) and the download has a 30s timeout, so a
+      # slow runner fails the job before anything is built. Cache it, keyed on
+      # package.json because that is where the pin lives.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/node/corepack
+          key: corepack-${{ runner.os }}-${{ hashFiles('package.json') }}
+
       - name: Enable pnpm (version pinned via packageManager)
         run: corepack enable pnpm
 
@@ -63,15 +114,29 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # R2 is not bound by the site today (it is fully static with no
+          # runtime bindings). These are wired in so the credentials are
+          # available the moment an R2 binding is added to wrangler.jsonc.
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ vars.R2_ACCOUNT_ID }}
+          R2_S3_ENDPOINT: ${{ vars.R2_S3_ENDPOINT }}
 
       - name: Smoke test (live URL must serve the portfolio)
         run: |
-          sleep 10
-          code=$(curl -s -o /dev/null -w "%{http_code}" \
-            https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
-          echo "live status: $code"
-          [ "$code" = "200" ] || { echo "smoke test failed"; exit 1; }
-          body=$(curl -s https://pujan-banik-arnab.banikarnab-ipe.workers.dev/)
+          # Retry rather than sleep once: the Worker takes a moment to serve
+          # the newly uploaded assets, and a fixed sleep turns a slow deploy
+          # into a red build for no reason.
+          url="https://pujan-banik-arnab.banikarnab-ipe.workers.dev/"
+          code=""
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || true)
+            echo "attempt $i: status $code"
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+          [ "$code" = "200" ] || { echo "smoke test failed: last status $code"; exit 1; }
+          body=$(curl -s "$url")
           echo "$body" | grep -q "<h1" || { echo "smoke test: no <h1> content"; exit 1; }
           echo "$body" | grep -q 'src="/reveal.js"' || { echo "smoke test: reveal.js missing"; exit 1; }
           echo "content markers present"

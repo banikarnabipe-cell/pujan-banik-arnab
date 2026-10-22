@@ -14,7 +14,7 @@ const { id, kicker, divider = true, class: className } = Astro.props;
 <section
   id={id}
   class:list={[
-    "border-t border-outline-variant",
+    divider ? "border-t border-outline-variant" : "",
     className,
   ]}
 >

@@ -23,97 +23,21 @@
  *                                                         # test a deployment
  * Exit code 0 = all assertions pass, 1 = failures (printed with FAIL tags).
  */
-import { createRequire } from "node:module";
-import { createServer } from "node:http";
-import { readFileSync, existsSync, statSync } from "node:fs";
-import { join, extname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { launchBrowser, resolveOrigin, makeReporter } from "./lib/browser.mjs";
 
-const require = createRequire("/home/z/my-project/rea-agent/package.json");
-const { chromium } = require("playwright-core");
+const reporter = makeReporter();
+const check = reporter.check;
 
-const CHROME_BIN =
-  process.env.CHROME_BIN ??
-  "/home/z/.cache/ms-playwright/chromium-1200/chrome-linux64/chrome";
-// NB: playwright-core resolves from the local REA toolchain checkout (this
-// script is a local gate, not wired into CI). dist resolves repo-relative.
-const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../..");
-const DIST = resolve(process.env.DIST ?? join(REPO_ROOT, "apps/web/dist"));
-const SITE = process.env.SITE; // e.g. https://pujan-banik-arnab.banikarnab-ipe.workers.dev
-const PORT = Number(process.env.PORT ?? 0); // 0 = ephemeral
-
-let failures = 0;
-const check = (name, ok, detail = "") => {
-  if (!ok) failures++;
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? " — " + detail : ""}`);
-};
-
-// ---- static server that applies dist/_headers ------------------------------
-const MIME = {
-  ".html": "text/html; charset=utf-8",
-  ".css": "text/css",
-  ".js": "text/javascript",
-  ".mjs": "text/javascript",
-  ".svg": "image/svg+xml",
-  ".pdf": "application/pdf",
-  ".json": "application/json",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".webp": "image/webp",
-  ".ico": "image/x-icon",
-  ".woff2": "font/woff2",
-  ".txt": "text/plain",
-};
-
-function parseHeadersFile(text) {
-  /** Minimal _headers parser: blocks of `path` + indented `Name: value`. */
-  const rules = [];
-  let current = null;
-  for (const line of text.split("\n")) {
-    if (!line.trim() || line.trim().startsWith("#")) continue;
-    if (/^\s/.test(line) && current) {
-      const idx = line.indexOf(":");
-      if (idx > 0)
-        current.headers.push([line.slice(0, idx).trim(), line.slice(idx + 1).trim()]);
-    } else {
-      current = { path: line.trim(), headers: [] };
-      rules.push(current);
-    }
-  }
-  return rules;
-}
-
-let server = null;
-let origin = SITE;
-if (!origin) {
-  const rules = parseHeadersFile(readFileSync(join(DIST, "_headers"), "utf8"));
-  server = createServer((req, res) => {
-    const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
-    let fsPath = join(DIST, urlPath === "/" ? "index.html" : urlPath);
-    if (!existsSync(fsPath) || statSync(fsPath).isDirectory()) {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("not found");
-      return;
-    }
-    const headers = { "Content-Type": MIME[extname(fsPath)] ?? "application/octet-stream" };
-    for (const rule of rules) {
-      if (rule.path === "/*" || urlPath === rule.path) {
-        for (const [k, v] of rule.headers) headers[k] = v;
-      }
-    }
-    res.writeHead(200, headers);
-    res.end(readFileSync(fsPath));
-  });
-  await new Promise((ok) => server.listen(PORT, "127.0.0.1", ok));
-  origin = `http://127.0.0.1:${server.address().port}`;
-  console.log(`serving ${DIST} at ${origin} (with dist/_headers applied)`);
-}
+// ---- site under test --------------------------------------------------------
+// lib/browser.mjs serves apps/web/dist with the real dist/_headers applied,
+// so the browser enforces the production Content-Security-Policy here.
+const { origin, close: closeServer } = await resolveOrigin();
 
 // ---- browser assertions ----------------------------------------------------
 const consoleErrors = [];
 const failedRequests = [];
 
-const browser = await chromium.launch({ headless: true, executablePath: CHROME_BIN });
+const browser = await launchBrowser();
 try {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await ctx.newPage();
@@ -124,10 +48,16 @@ try {
 
   await page.goto(origin + "/", { waitUntil: "networkidle" });
 
-  check("R1 no console errors (CSP violations surface here)", consoleErrors.length === 0,
-    consoleErrors.slice(0, 3).join(" | "));
-  check("R2 no failed network requests", failedRequests.length === 0,
-    failedRequests.slice(0, 3).join(" | "));
+  check(
+    "R1 no console errors (CSP violations surface here)",
+    consoleErrors.length === 0,
+    consoleErrors.slice(0, 3).join(" | "),
+  );
+  check(
+    "R2 no failed network requests",
+    failedRequests.length === 0,
+    failedRequests.slice(0, 3).join(" | "),
+  );
 
   const boot = await page.evaluate(() => document.documentElement.classList.contains("js"));
   check("R3 html.js boot class present (inline boot allowed by CSP)", boot);
@@ -155,16 +85,21 @@ try {
     };
   });
   check("R4 [data-reveal] elements exist", reveal.total > 0, `${reveal.total} targets`);
-  check("R4 all [data-reveal] revealed after scroll", reveal.revealed === reveal.total,
-    `${reveal.revealed}/${reveal.total}`);
-  check("R5 hero <h1> visible (computed opacity 1)", reveal.h1Opacity === "1",
-    `opacity=${reveal.h1Opacity}`);
+  check(
+    "R4 all [data-reveal] revealed after scroll",
+    reveal.revealed === reveal.total,
+    `${reveal.revealed}/${reveal.total}`,
+  );
+  check(
+    "R5 hero <h1> visible (computed opacity 1)",
+    reveal.h1Opacity === "1",
+    `opacity=${reveal.h1Opacity}`,
+  );
 
   await ctx.close();
 } finally {
   await browser.close();
-  if (server) server.close();
+  await closeServer();
 }
 
-console.log(failures ? `\n${failures} check(s) FAILED` : "\nall CSP render checks PASS");
-process.exit(failures ? 1 : 0);
+reporter.finish();

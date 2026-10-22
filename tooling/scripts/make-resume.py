@@ -22,7 +22,9 @@ from reportlab.pdfbase.pdfmetrics import registerFontFamily
 import os
 
 # ── Fonts (per configs/fonts.md) ──
-FREE = "/usr/share/fonts/truetype/freefont"
+# Override with FREESERIF_DIR on platforms that install the FreeSerif family
+# elsewhere (macOS/Windows) — the default is the Debian path.
+FREE = os.environ.get("FREESERIF_DIR", "/usr/share/fonts/truetype/freefont")
 pdfmetrics.registerFont(TTFont("FreeSerif", f"{FREE}/FreeSerif.ttf"))
 pdfmetrics.registerFont(TTFont("FreeSerif-Bold", f"{FREE}/FreeSerifBold.ttf"))
 pdfmetrics.registerFont(TTFont("FreeSerif-Italic", f"{FREE}/FreeSerifItalic.ttf"))
@@ -66,7 +68,11 @@ def entry(title, meta, bullets):
     parts = [Paragraph(f"<b>{title}</b>", job_title), Paragraph(meta, job_meta)]
     return KeepTogether(parts + [Paragraph(f"\u2022 {b}", bullet) for b in bullets])
 
-OUT = "/home/z/my-project/apps/web/public/resume.pdf"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OUT = os.environ.get(
+    "RESUME_OUT",
+    os.path.join(REPO_ROOT, "apps", "web", "public", "resume.pdf"),
+)
 doc = SimpleDocTemplate(
     OUT, pagesize=A4,
     leftMargin=1.5 * cm, rightMargin=1.5 * cm, topMargin=1.5 * cm, bottomMargin=1.5 * cm,

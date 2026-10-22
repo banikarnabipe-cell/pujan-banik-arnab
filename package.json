@@ -1,9 +1,9 @@
 {
   "name": "pujan-banik-arnab-portfolio",
   "type": "module",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "private": true,
-  "description": "v0.7.0: pnpm monorepo (apps/web + packages/{ui,design-system,config}) — Tailwind v4 token bridge on the M3 tailored system, retriever-derived design language, Cloudflare deployment target. Hero remains the ONLY dotted surface (animated canvas wave).",
+  "description": "v0.7.2: pnpm monorepo (apps/web + packages/{ui,design-system,config}) — Tailwind v4 token bridge on the M3 tailored system, retriever-derived design language, Cloudflare deployment target. Hero remains the ONLY dotted surface (animated canvas wave).",
   "packageManager": "pnpm@12.14.0",
   "engines": {
     "node": ">=24"
@@ -11,7 +11,14 @@
   "scripts": {
     "dev": "pnpm --filter @pba/web dev",
     "build": "pnpm -r build",
+    "build:timings": "pnpm --filter @pba/web build:timings",
     "preview": "pnpm --filter @pba/web preview",
+    "preview:bg": "pnpm --filter @pba/web preview:bg",
+    "preview:status": "pnpm --filter @pba/web preview:status",
+    "preview:logs": "pnpm --filter @pba/web preview:logs",
+    "preview:stop": "pnpm --filter @pba/web preview:stop",
+    "astro:info": "pnpm --filter @pba/web astro:info",
+    "astro:sync": "pnpm --filter @pba/web sync",
     "tokens": "pnpm --filter @pba/design-system build",
     "typecheck": "pnpm --filter @pba/web check",
     "lint": "pnpm --filter @pba/web check",
@@ -19,17 +26,22 @@
     "format:check": "prettier --check .",
     "test": "pnpm --filter @pba/web test",
     "deploy": "pnpm build && wrangler deploy --env=\"\"",
-    "deploy:preview": "pnpm build && wrangler deploy --env preview",
+    "deploy:preview": "pnpm build && wrangler preview",
     "deploy:dry": "pnpm build && wrangler deploy --dry-run",
     "qa:design": "node tooling/scripts/verify-design-contract.mjs",
     "qa:env": "node tooling/scripts/verify-env-emulation.mjs",
     "qa:csp": "node tooling/scripts/verify-csp.mjs",
     "qa:csp:render": "node tooling/scripts/verify-csp-render.mjs",
     "qa:devices": "node tooling/scripts/device-qa.mjs",
-    "qa:visual": "bash tooling/scripts/qa-capture.sh",
+    "qa:visual": "node tooling/scripts/visual-capture.mjs",
+    "qa": "pnpm qa:csp && pnpm qa:csp:render && pnpm qa:env && pnpm qa:design",
+    "csp:hash": "node tooling/scripts/csp-hash.mjs",
+    "manifest": "node tooling/scripts/build-manifest.mjs",
+    "manifest:check": "node tooling/scripts/build-manifest.mjs --check",
     "resume": "python3 tooling/scripts/make-resume.py"
   },
   "devDependencies": {
+    "playwright-core": "^1.64.1",
     "prettier": "^3.6.2",
     "wrangler": "^4.42.0"
   }

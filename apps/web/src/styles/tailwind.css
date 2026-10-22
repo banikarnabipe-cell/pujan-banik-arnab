@@ -11,5 +11,9 @@
 @import "@pba/design-system/theme.css" layer(theme);
 
 /* Tailwind v4 auto-detection only scans the Vite root (apps/web). The shared
-   components live in the workspace package — declare them explicitly. */
-@source "../../../packages/ui/src";
+   components live in the workspace package — declare them explicitly.
+   NOTE: @source paths resolve relative to THIS file (apps/web/src/styles), so
+   reaching the repo root takes FOUR levels up, not three. With "../../../" the
+   path pointed at apps/packages/ui/src (does not exist), Tailwind scanned
+   nothing, and NO utility class was ever generated for @pba/ui. */
+@source "../../../../packages/ui/src";

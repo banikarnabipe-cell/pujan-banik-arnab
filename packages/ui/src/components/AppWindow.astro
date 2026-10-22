@@ -1,0 +1,74 @@
+---
+interface Props {
+  readonly title: string;
+  readonly badge: string;
+  readonly tone?: "live" | "passive";
+}
+
+const { title, badge, tone = "live" } = Astro.props;
+---
+
+<figure class="app-window">
+  <figcaption class="chrome">
+    <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="title">{title}</span>
+    <span class={`badge badge--${tone}`}>{badge}</span>
+  </figcaption>
+  <div class="body">
+    <slot />
+  </div>
+</figure>
+
+<style>
+  .app-window {
+    margin: 0;
+    background: var(--md-sys-color-inverse-surface);
+    border: 1px solid var(--win-edge);
+    border-radius: var(--md-shape-xs);
+    overflow: hidden;
+    color: var(--md-sys-color-inverse-on-surface);
+    font-family: var(--font-mono);
+    box-shadow: var(--md-elevation-2);
+  }
+  .chrome {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--win-chrome);
+    border-bottom: 1px solid var(--win-edge);
+  }
+  .dots { display: inline-flex; gap: 5px; }
+  .dots i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--win-edge);
+  }
+  .dots i:first-child { background: #c9584a; }
+  .dots i:nth-child(2) { background: #b98d2f; }
+  .dots i:last-child { background: #4f8a4a; }
+  .title {
+    font-size: var(--md-sys-type-label-small-size);
+    letter-spacing: var(--md-sys-type-label-small-tracking);
+    text-transform: uppercase;
+    color: var(--md-sys-color-inverse-primary);
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .badge {
+    font-size: var(--md-sys-type-label-small-size);
+    letter-spacing: var(--md-sys-type-label-small-tracking);
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--win-edge);
+    color: var(--md-sys-color-inverse-primary);
+  }
+  .badge--live { color: #7ec493; border-color: #37503c; }
+  .badge--passive { color: #c9b06a; border-color: #4d442c; }
+  .body { padding: 16px; }
+</style>

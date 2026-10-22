@@ -1,0 +1,42 @@
+---
+/* M3 common button — Tailwind-native, token-bridged.
+   State layers: ::after currentColor veil at --md-state-layer-* opacities
+   (hover .08 / focus .12 / pressed .12) — same mechanism as the legacy .btn,
+   expressed with Tailwind arbitrary variants. Typography = label-medium role
+   (size/leading/weight/tracking flow from the @theme inline bridge). */
+interface Props {
+  readonly href: string;
+  readonly variant?: "filled" | "outlined" | "tonal" | "text" | undefined;
+  readonly download?: boolean | undefined;
+  readonly class?: string | undefined;
+  readonly "aria-label"?: string | undefined;
+}
+
+const { href, variant = "filled", download = false, class: className, ...rest } = Astro.props;
+
+const base = [
+  "relative isolate inline-flex items-center gap-2 rounded-xs border border-transparent",
+  "py-[13px] px-[22px] font-sys-mono text-label-medium uppercase font-medium leading-none",
+  "no-underline transition-[background-color,border-color] duration-(--md-sys-motion-duration-medium2) ease-standard",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-xs after:content-[\"\"]",
+  "after:bg-current after:opacity-0 after:transition-[opacity] after:duration-(--md-sys-motion-duration-short4) after:ease-standard after:-z-10",
+  "hover:after:opacity-(--md-state-layer-hover)",
+  "focus-visible:after:opacity-(--md-state-layer-focus)",
+  "active:after:opacity-(--md-state-layer-pressed) active:translate-y-px",
+].join(" ");
+
+const variants = {
+  filled: "bg-primary text-on-primary",
+  outlined: "bg-transparent text-on-surface border-outline",
+  tonal: "bg-secondary-container text-on-secondary-container",
+  text: "bg-transparent text-primary px-3",
+} as const;
+
+const variantClass = variants[variant];
+---
+<a
+  href={href}
+  download={download ? "" : undefined}
+  class:list={[base, variantClass, className]}
+  {...rest}
+><slot /></a>

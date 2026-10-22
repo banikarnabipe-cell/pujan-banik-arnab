@@ -1,0 +1,19 @@
+---
+/* M3 outlined card (surface-container-lowest + outline-variant hairline).
+   Variants: outlined (default) / elevated (level-1 shadow) / filled. */
+interface Props {
+  readonly variant?: "outlined" | "elevated" | "filled" | undefined;
+  readonly class?: string | undefined;
+}
+
+const { variant = "outlined", class: className } = Astro.props;
+
+const variants = {
+  outlined: "bg-surface-container-lowest border border-outline-variant",
+  elevated: "bg-surface-container-low border-transparent shadow-level1",
+  filled: "bg-surface-container-high border-transparent",
+} as const;
+---
+<div class:list={["rounded-xs p-5", variants[variant], className]}>
+  <slot />
+</div>

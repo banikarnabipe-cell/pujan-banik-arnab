@@ -1,0 +1,28 @@
+---
+/* Scene shell — hairline-divided section with container + mono kicker.
+   Transparent background on purpose: the shared canvas (html) shows through;
+   the hero is the ONLY dotted surface. */
+interface Props {
+  readonly id: string;
+  readonly kicker: string;
+  readonly divider?: boolean | undefined;
+  readonly class?: string | undefined;
+}
+
+const { id, kicker, divider = true, class: className } = Astro.props;
+---
+<section
+  id={id}
+  class:list={[
+    "border-t border-outline-variant",
+    className,
+  ]}
+>
+  <div class="mx-auto max-w-(--container) px-(--gutter) py-(--scene-pad)">
+    <p
+      class="font-sys-mono text-label-medium uppercase text-on-surface-variant mb-[26px]"
+      data-reveal
+    >{kicker}</p>
+    <slot />
+  </div>
+</section>

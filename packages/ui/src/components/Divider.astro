@@ -1,0 +1,8 @@
+---
+/* M3 divider — 1px outline-variant hairline. */
+interface Props {
+  readonly class?: string | undefined;
+}
+const { class: className } = Astro.props;
+---
+<hr class:list={["border-0 border-t border-outline-variant m-0", className]} />

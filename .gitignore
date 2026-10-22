@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# secrets — never commit
+.env
+.env.*
+*.env
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+
+# logs
+*.log
+logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db

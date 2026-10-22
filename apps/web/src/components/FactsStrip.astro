@@ -1,0 +1,41 @@
+---
+import { site } from "../data/site";
+
+const { facts } = site;
+---
+
+<section class="facts" aria-label="Key facts">
+  <div class="container">
+    <dl class="grid" data-reveal>
+      {facts.map((fact) => (
+        <div class="item">
+          <dt class="microlabel">{fact.label}</dt>
+          <dd>{fact.text}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .facts { padding-block: 8px clamp(2rem, 1rem + 3vw, 3rem); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+  }
+  .item {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding-top: 12px;
+  }
+  dt { margin-bottom: 8px; }
+  dd {
+    margin: 0;
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.5;
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,106 @@
+---
+import Heading from "./Heading.astro";
+import { site } from "../data/site";
+
+const { contact } = site;
+---
+
+<Heading lines={contact.title} />
+
+<div class="prose" data-reveal style="--reveal-order: 1">
+  {contact.lede.map((paragraph) => <p>{paragraph}</p>)}
+</div>
+
+<div class="actions" data-reveal style="--reveal-order: 2">
+  {contact.actions.map((action) => (
+    <a
+      class={`btn btn--${action.variant}`}
+      href={action.href}
+      download={action.download ? "" : undefined}
+    >{action.label}</a>
+  ))}
+</div>
+
+<div class="faq" data-reveal style="--reveal-order: 3">
+  <h3 class="microlabel faq-heading">{contact.faq.heading}</h3>
+  {contact.faq.items.map((item) => (
+    <details name="faq">
+      <summary>
+        <span>{item.question}</span>
+        <span class="icon" aria-hidden="true"></span>
+      </summary>
+      <p class="answer">{item.answer}</p>
+    </details>
+  ))}
+</div>
+
+<style>
+  .prose {
+    display: grid;
+    gap: 16px;
+    max-width: 62ch;
+    margin-top: 22px;
+  }
+  .actions {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .faq {
+    margin-top: clamp(2.5rem, 1.5rem + 4vw, 4rem);
+    max-width: 72ch;
+  }
+  .faq-heading { margin-bottom: 10px; }
+  details {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+  details:last-of-type { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 4px;
+    cursor: pointer;
+    font-size: var(--md-sys-type-body-large-size);
+    font-weight: 500;
+    list-style: none;
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { background: rgb(19 19 17 / 0.04); }
+  .icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .icon::before,
+  .icon::after {
+    content: "";
+    position: absolute;
+    background: var(--md-sys-color-on-surface);
+    transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  }
+  .icon::before {
+    left: 0;
+    top: 6px;
+    width: 14px;
+    height: 2px;
+  }
+  .icon::after {
+    left: 6px;
+    top: 0;
+    width: 2px;
+    height: 14px;
+  }
+  details[open] .icon::after { transform: scaleY(0); }
+  .answer {
+    padding: 0 4px 18px;
+    max-width: 60ch;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--md-sys-type-body-medium-size);
+    line-height: 1.6;
+  }
+</style>

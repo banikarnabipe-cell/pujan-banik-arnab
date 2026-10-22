@@ -1,0 +1,233 @@
+/* Tokens come from @pba/design-system (imported in Layout.astro BEFORE this
+   file) — see packages/design-system/design-tokens.json, compiled to
+   dist/tokens.css. This file stays app-level foundation + primitives. */
+
+/* ─────────────────────────────────────────────────────────────────
+   Global foundation — Material 3 tailored primitives on the exact
+   reference canvas in BOTH schemes: light #ECECEC and dark #1E1E1E
+   (theretriever.app body backgrounds, live-verified 2026-10-22; the
+   reference is dark-first, we mirror its runtime behavior with a
+   prefers-color-scheme: dark override on the same role tokens).
+   Every section is flat and shares the SAME background colour; the
+   hero is the ONLY section carrying the dot pattern — the reference's
+   animated <canvas class="wave"> dot wave (see tokens.css dotwave
+   group + docs/reference-assets/).   
+   ───────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+/* v0.7.0 motion policy: no reduced-motion override — smooth scroll and all
+   transitions run for every user (owner directive; see docs/MOTION.md). */
+
+html {
+  background: var(--md-sys-color-surface);
+}
+
+body {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--md-sys-type-body-large-size);
+  line-height: var(--md-sys-type-body-large-line-height);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Transparent on purpose: html carries the opaque canvas so the
+     hero's absolutely-positioned .wave canvas (z-index: 0, inside the
+     hero's own stacking context) stays visible ABOVE the canvas and
+     BELOW all content. Do not give body its own background. */
+  background: transparent;
+}
+
+/* Hero — the ONLY dotted surface. The dots are the reference's animated
+   canvas wave (canvas.wave rendered by Hero.astro, driven by public/wave.js
+   with token values from the dotwave group). Positioning/stacking here;
+   wave paint styles live with the component. */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, h4, p { margin: 0; }
+
+a { color: inherit; }
+
+button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; }
+
+/* M3 focus ring: 3px primary outline, visible offset. */
+:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 3px;
+  border-radius: var(--md-shape-none);
+}
+
+::selection { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+
+/* Layout primitives */
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.scene { border-top: 1px solid var(--md-sys-color-outline-variant); }
+.scene > .container { padding-block: var(--scene-pad); }
+.scene--flush:first-of-type { border-top: 0; }
+
+/* M3 label role, tailored to the mono schematic voice */
+.microlabel {
+  font-family: var(--font-mono);
+  font-size: var(--md-sys-type-label-medium-size);
+  letter-spacing: var(--md-sys-type-label-medium-tracking);
+  text-transform: uppercase;
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: var(--md-sys-type-label-medium-weight);
+  line-height: var(--md-sys-type-label-medium-line-height);
+}
+
+/* ── M3 common buttons (tailored: flat corners, mono labels) ────── */
+.btn {
+  --btn-bg: var(--md-sys-color-primary);
+  --btn-ink: var(--md-sys-color-on-primary);
+  --btn-edge: transparent;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--md-sys-type-label-medium-size);
+  letter-spacing: var(--md-sys-type-label-medium-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  line-height: 1;
+  padding: 13px 22px;
+  border-radius: var(--md-shape-xs);
+  border: 1px solid var(--btn-edge);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  isolation: isolate;
+  transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+              border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+/* M3 state layer: content-colored veil at tokenized opacities. */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  pointer-events: none;
+  z-index: -1;
+  mix-blend-mode: normal;
+}
+.btn:hover::after { opacity: var(--md-state-layer-hover); }
+.btn:focus-visible::after { opacity: var(--md-state-layer-focus); }
+.btn:active::after { opacity: var(--md-state-layer-pressed); }
+.btn:active { transform: translateY(1px); }
+
+.btn--outlined {
+  --btn-bg: transparent;
+  --btn-ink: var(--md-sys-color-on-surface);
+  --btn-edge: var(--md-sys-color-outline);
+}
+.btn--tonal {
+  --btn-bg: var(--md-sys-color-secondary-container);
+  --btn-ink: var(--md-sys-color-on-secondary-container);
+}
+.btn--text {
+  --btn-bg: transparent;
+  --btn-ink: var(--md-sys-color-primary);
+  padding-inline: 12px;
+}
+
+/* Legacy variant aliases (Phase 1 names -> M3 variants) */
+.btn--ghost { --btn-bg: var(--md-sys-color-secondary-container); --btn-ink: var(--md-sys-color-on-secondary-container); --btn-edge: var(--md-sys-color-outline-variant); }
+
+/* ── M3 cards (outlined + elevated) ─────────────────────────────── */
+.m3-card {
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-shape-xs);
+  padding: 20px;
+}
+.m3-card--elevated {
+  border-color: transparent;
+  box-shadow: var(--md-elevation-1);
+  background: var(--md-sys-color-surface-container-low);
+}
+.m3-card--filled {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: transparent;
+}
+
+/* ── M3 chips (assist/filter, outlined, state layers) ───────────── */
+.m3-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--md-sys-type-label-small-size);
+  letter-spacing: var(--md-sys-type-label-small-tracking);
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 7px 12px;
+  border-radius: var(--md-shape-xs);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  background: var(--md-sys-color-surface-container-lowest);
+  text-decoration: none;
+  position: relative;
+  isolation: isolate;
+}
+.m3-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  pointer-events: none;
+  z-index: -1;
+}
+.m3-chip:hover::after { opacity: var(--md-state-layer-hover); }
+.m3-chip:active::after { opacity: var(--md-state-layer-pressed); }
+
+/* ── M3 divider ─────────────────────────────────────────────────── */
+.m3-divider { border: 0; border-top: 1px solid var(--md-sys-color-outline-variant); margin: 0; }
+
+/* Scroll reveal contract: [data-reveal] enters via opacity+translate only.
+   Gated behind html.js so no-JS visitors always see content.
+   JS (Layout) adds .is-in when observed. v0.7.0: runs for every user —
+   the prefers-reduced-motion wrapper was removed (owner directive). */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-shift));
+  transition:
+    opacity var(--dur-reveal) var(--md-sys-motion-easing-standard-decelerate),
+    transform var(--dur-reveal) var(--md-sys-motion-easing-standard-decelerate);
+  transition-delay: calc(var(--reveal-order, 0) * var(--stagger-step));
+}
+html.js [data-reveal].is-in { opacity: 1; transform: none; }
+html.no-observe [data-reveal] { opacity: 1 !important; transform: none !important; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  padding: 10px 16px;
+  border-radius: 0 0 var(--md-shape-xs) 0;
+  font-family: var(--font-mono);
+  font-size: var(--md-sys-type-label-medium-size);
+  text-transform: uppercase;
+  letter-spacing: var(--md-sys-type-label-medium-tracking);
+  z-index: 100;
+}
+.skip-link:focus-visible { left: 0; }

@@ -1,0 +1,121 @@
+---
+import Heading from "./Heading.astro";
+import { site } from "../data/site";
+
+const { projects } = site.scenes;
+
+const badgeClass = {
+  shipped: "badge--shipped",
+  "in-progress": "badge--in-progress",
+  academic: "badge--academic",
+} as const;
+const badgeText = {
+  shipped: "shipped",
+  "in-progress": "in progress",
+  academic: "academic",
+} as const;
+---
+
+<Heading lines={projects.title} />
+
+<div class="prose" data-reveal style="--reveal-order: 1">
+  {projects.lede.map((paragraph) => <p>{paragraph}</p>)}
+</div>
+
+<div class="events">
+  {projects.events.map((event, idx) => (
+    <article class="event" data-reveal style={`--reveal-order: ${idx + 1}`}>
+      <div class="chart" aria-hidden="true">
+        {event.bars.map((height) => (
+          <span class={`bar bar--${event.status}`} style={`height: ${height * 10}%`} />
+        ))}
+      </div>
+      <div class="meta">
+        <span class="microlabel id">{event.id}</span>
+        <span class="dur">{event.year}</span>
+      </div>
+      <span class={`badge microlabel ${badgeClass[event.status]}`}>{badgeText[event.status]}</span>
+      <p class="summary">{event.summary}</p>
+    </article>
+  ))}
+</div>
+
+{projects.note.map((paragraph) => (
+  <p class="note" data-reveal>{paragraph}</p>
+))}
+
+<style>
+  .prose {
+    display: grid;
+    gap: 16px;
+    max-width: 62ch;
+    margin-top: 22px;
+  }
+  .events {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: clamp(2rem, 1.2rem + 3vw, 3rem);
+  }
+  .event {
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    gap: 12px;
+    background: var(--md-sys-color-inverse-surface);
+    border: 1px solid var(--win-edge);
+    border-radius: var(--md-shape-xs);
+    padding: 14px;
+    color: var(--md-sys-color-inverse-on-surface);
+  }
+  .chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 84px;
+    background: #242420;
+    border-radius: 4px;
+    padding: 10px;
+  }
+  .bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    min-height: 8%;
+  }
+  .bar--shipped { background: #3f6b4c; }
+  .bar--in-progress { background: #503a52; }
+  .bar--academic { background: #8a6d2e; }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .id { color: var(--md-sys-color-inverse-primary); }
+  .dur {
+    font-family: var(--font-mono);
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-inverse-on-surface);
+  }
+  .badge {
+    justify-self: start;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--win-edge);
+  }
+  .badge--shipped { color: #7ec493; border-color: #37503c; }
+  .badge--in-progress { color: #b9a3c9; border-color: #43364a; }
+  .badge--academic { color: #c9b06a; border-color: #4d442c; }
+  .summary {
+    font-size: var(--md-sys-type-body-small-size);
+    line-height: 1.55;
+    color: var(--md-sys-color-inverse-on-surface);
+    opacity: 0.86;
+  }
+  .note {
+    margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    max-width: 62ch;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  @media (max-width: 1024px) { .events { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .events { grid-template-columns: 1fr; } }
+</style>

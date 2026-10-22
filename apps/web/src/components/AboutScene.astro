@@ -1,0 +1,84 @@
+---
+import Heading from "./Heading.astro";
+import { site } from "../data/site";
+
+const { about } = site.scenes;
+
+/* State figures carry the reference's OWN dot-matrix illustrations
+   (byte-exact decay-1/2/3.svg, verified + provenance in
+   docs/reference-assets/). These are CONTENT images — the hero remains
+   the only dotted SURFACE; no dot backgrounds are added here. */
+---
+
+<Heading lines={about.title} />
+
+<div class="prose" data-reveal style="--reveal-order: 1">
+  {about.lede.map((paragraph) => <p>{paragraph}</p>)}
+</div>
+
+<div class="states">
+  {about.states.map((state, idx) => (
+    <figure class="state" data-reveal style={`--reveal-order: ${idx + 2}`}>
+      <img
+        class="state-img"
+        src={state.image}
+        alt={state.imageAlt}
+        width="320"
+        height="160"
+        loading="lazy"
+      />
+      <figcaption>
+        <span class="microlabel label">{state.label}</span>
+        <span class="desc">{state.text}</span>
+      </figcaption>
+    </figure>
+  ))}
+</div>
+
+<p class="footnote" data-reveal>{about.footnote}</p>
+
+<style>
+  .prose {
+    display: grid;
+    gap: 16px;
+    max-width: 62ch;
+    margin-top: 22px;
+  }
+  .states {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+  }
+  .state { margin: 0; }
+  /* Reference-exact presentation: the bare 320x160 dot-matrix SVG above
+     the caption, directly on the shared flat canvas (no card, no dot
+     background — the hero stays the only dotted surface). */
+  .state-img {
+    width: 320px;
+    max-width: 100%;
+    height: auto;
+  }
+  figcaption {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .desc {
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.5;
+    max-width: 30ch;
+  }
+  .footnote {
+    margin-top: clamp(2rem, 1.2rem + 3vw, 3rem);
+    font-family: var(--font-mono);
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 72ch;
+    line-height: 1.7;
+  }
+  @media (max-width: 768px) {
+    .states { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,187 @@
+---
+import Heading from "./Heading.astro";
+import { site } from "../data/site";
+
+const { experience } = site.scenes;
+
+const zoneClass = {
+  solid: "zone--solid",
+  hatch: "zone--hatch",
+  void: "zone--void",
+} as const;
+---
+
+<Heading lines={experience.title} />
+
+<div class="prose" data-reveal style="--reveal-order: 1">
+  {experience.lede.map((paragraph) => <p>{paragraph}</p>)}
+</div>
+
+<div class="map-wrap" data-reveal style="--reveal-order: 2">
+  <div class="map" role="img" aria-label={experience.zones.map((z) => `${z.percent} percent ${z.label}`).join(", ")}>
+    {experience.zones.map((zone) => (
+      <div
+        class={`zone ${zoneClass[zone.variant]}`}
+        style={`flex: 0 0 ${zone.percent}%`}
+        data-zone={zone.variant}
+      />
+    ))}
+  </div>
+  <dl class="legend">
+    {experience.zones.map((zone) => (
+      <div class="legend-item">
+        <dt class="microlabel">
+          <span class={`swatch ${zoneClass[zone.variant]}`} aria-hidden="true"></span>
+          {zone.percent} % {zone.label}
+        </dt>
+        <dd>{zone.caption}</dd>
+      </div>
+    ))}
+  </dl>
+</div>
+
+<p class="quote" data-reveal>{experience.quote}</p>
+
+<ol class="timeline" role="list">
+  {experience.entries.map((entry, idx) => (
+    <li class="entry" data-reveal style={`--reveal-order: ${idx}`}>
+      <div class="entry-head">
+        <h3>{entry.role}</h3>
+        <span class="microlabel period">{entry.period}</span>
+      </div>
+      <p class="org">{entry.org}</p>
+      <ul role="list">
+        {entry.points.map((point) => (
+          <li>{point}</li>
+        ))}
+      </ul>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .prose {
+    display: grid;
+    gap: 16px;
+    max-width: 62ch;
+    margin-top: 22px;
+  }
+  .map-wrap { margin-top: clamp(2rem, 1.2rem + 3vw, 3rem); }
+  .map {
+    display: flex;
+    height: 56px;
+    border-radius: var(--md-shape-xs);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    overflow: hidden;
+    background: var(--md-sys-color-surface-container-lowest);
+  }
+  /* Zone map: solid / hatch / void. The former dotted "solid" fill was
+     removed — the hero is the only dotted surface in the design system.
+     "Solid" is now a flat ink fill; hatch keeps its diagonal stripes. */
+  .zone--solid {
+    background: var(--md-sys-color-primary);
+  }
+  .zone--hatch {
+    background: repeating-linear-gradient(135deg, rgb(140 74 38 / 0.55) 0 5px, rgb(140 74 38 / 0.14) 5px 10px);
+  }
+  .zone--void { background: transparent; }
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: 20px 0 0;
+  }
+  .legend-item dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-on-surface);
+  }
+  .legend-item dd {
+    margin: 6px 0 0;
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.5;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    display: inline-block;
+  }
+  .swatch.zone--solid {
+    background: var(--md-sys-color-primary);
+  }
+  .swatch.zone--hatch {
+    background: repeating-linear-gradient(135deg, rgb(140 74 38 / 0.55) 0 3px, rgb(140 74 38 / 0.14) 3px 6px);
+  }
+  .quote {
+    margin-top: clamp(2rem, 1.2rem + 3vw, 3rem);
+    font-family: var(--font-mono);
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+    max-width: 72ch;
+    line-height: 1.7;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: clamp(2rem, 1.2rem + 3vw, 3rem) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  .entry {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding-block: 22px;
+    display: grid;
+    gap: 10px;
+  }
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .entry h3 {
+    font-size: var(--md-sys-type-title-large-size);
+    font-weight: var(--md-sys-type-title-large-weight);
+    letter-spacing: var(--md-sys-type-title-large-tracking);
+  }
+  .period { flex-shrink: 0; }
+  .org {
+    font-size: var(--md-sys-type-body-medium-size);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  .entry ul {
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  .entry li {
+    position: relative;
+    padding-left: 18px;
+    font-size: var(--md-sys-type-body-medium-size);
+    line-height: 1.55;
+    color: var(--md-sys-color-on-surface);
+  }
+  .entry li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--md-sys-color-primary);
+    opacity: 0.85;
+  }
+  @media (max-width: 768px) {
+    .legend { grid-template-columns: 1fr; }
+    .map { height: 44px; }
+  }
+</style>

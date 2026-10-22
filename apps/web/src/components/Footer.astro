@@ -1,0 +1,62 @@
+---
+import { site } from "../data/site";
+
+const { brand, nav } = site;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container grid">
+    <div class="brand-block">
+      <p class="brand">{brand.name}</p>
+      <p class="microlabel tagline">{brand.tagline}</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        {nav.footerLinks.map((link) => (
+          <li><a class="microlabel" href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+  <div class="container">
+    <p class="microlabel note">© {year} {brand.name}. {nav.footerNote}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding-block: 28px 40px;
+  }
+  .grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .tagline { text-transform: none; letter-spacing: 0.04em; }
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  nav a:hover { color: var(--md-sys-color-on-surface); text-decoration: underline; text-underline-offset: 3px; }
+  .note {
+    margin-top: 26px;
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+</style>

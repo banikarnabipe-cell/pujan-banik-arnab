@@ -1,0 +1,66 @@
+---
+import { site } from "../data/site";
+
+const { brand, nav } = site;
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href="#top" aria-label={`${brand.name} — back to top`}>
+      <svg class="mark" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+        <!-- Brand mark: unit box in a frame (supply-chain motif).
+             No dot elements anywhere outside the hero, per design rule. -->
+        <rect x="1" y="1" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+        <rect x="5.5" y="5.5" width="7" height="7" rx="1" fill="currentColor"></rect>
+      </svg>
+      <span>{brand.name}</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul>
+        {nav.links.map((link) => (
+          <li><a class="microlabel nav-link" href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    padding-block: 22px;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.05rem;
+  }
+  .mark { color: var(--md-sys-color-on-surface); }
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link {
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+  }
+  .nav-link:hover { color: var(--md-sys-color-on-surface); }
+  @media (max-width: 480px) {
+    .bar { justify-content: center; }
+    nav ul { justify-content: center; }
+  }
+</style>

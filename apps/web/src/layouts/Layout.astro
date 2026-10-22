@@ -1,0 +1,57 @@
+---
+import "@pba/design-system/tokens.css";
+import "../styles/tailwind.css";
+import "../styles/global.css";
+import { site } from "../data/site";
+
+interface Props {
+  readonly title?: string;
+  readonly description?: string;
+}
+
+const { title = `${site.brand.name} — ${site.brand.tagline}`, description = site.hero.lede } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ececec" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e1e1e" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+
+    <script>
+      // Motion contract: reveal-on-enter. Transform/opacity only.
+      // v0.7.0 policy: NO reduced-motion gate — reveals animate for every
+      // user (owner directive, documented in docs/MOTION.md). The only
+      // fallback is the absence of IntersectionObserver (no-observe).
+      const root = document.documentElement;
+      const targets = document.querySelectorAll<HTMLElement>("[data-reveal]");
+      if (!("IntersectionObserver" in window)) {
+        root.classList.add("no-observe");
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+        );
+        for (const el of targets) io.observe(el);
+      }
+    </script>
+  </body>
+</html>

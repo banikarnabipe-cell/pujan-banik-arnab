@@ -1,0 +1,21 @@
+---
+interface Props {
+  readonly id: string;
+  readonly kicker: string;
+  readonly divider?: boolean;
+}
+
+const { id, kicker, divider = true } = Astro.props;
+---
+
+<section class:list={["scene", { "scene--hairline": divider }]} id={id}>
+  <div class="container">
+    <p class="microlabel kicker" data-reveal>{kicker}</p>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .scene--hairline { border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .kicker { margin-bottom: 26px; }
+</style>

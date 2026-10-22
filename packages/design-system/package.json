@@ -1,0 +1,20 @@
+{
+  "name": "@pba/design-system",
+  "type": "module",
+  "version": "0.7.0",
+  "private": true,
+  "description": "Single source of truth: W3C DTCG design tokens (Material 3 role architecture, tailored) compiled to CSS custom properties + Tailwind theme bridge.",
+  "exports": {
+    "./tokens.css": "./dist/tokens.css",
+    "./theme.css": "./dist/theme.css",
+    "./tokens.json": "./design-tokens.json"
+  },
+  "files": [
+    "design-tokens.json",
+    "build-tokens.mjs",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build-tokens.mjs"
+  }
+}

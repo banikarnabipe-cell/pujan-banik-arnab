@@ -17,9 +17,13 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { verifyCspCoverage } from "./lib/csp.mjs";
 
-const DIST = resolve(process.argv[2] ?? "/home/z/my-project/apps/web/dist");
+// Resolve dist relative to THIS script so the gate works both locally and on
+// CI checkouts (no machine-specific absolute paths).
+const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../..");
+const DIST = resolve(process.argv[2] ?? join(REPO_ROOT, "apps/web/dist"));
 let failures = 0;
 const check = (name, ok, detail = "") => {
   if (!ok) failures++;

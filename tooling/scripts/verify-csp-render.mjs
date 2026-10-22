@@ -27,6 +27,7 @@ import { createRequire } from "node:module";
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { join, extname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire("/home/z/my-project/rea-agent/package.json");
 const { chromium } = require("playwright-core");
@@ -34,7 +35,10 @@ const { chromium } = require("playwright-core");
 const CHROME_BIN =
   process.env.CHROME_BIN ??
   "/home/z/.cache/ms-playwright/chromium-1200/chrome-linux64/chrome";
-const DIST = resolve(process.env.DIST ?? "/home/z/my-project/apps/web/dist");
+// NB: playwright-core resolves from the local REA toolchain checkout (this
+// script is a local gate, not wired into CI). dist resolves repo-relative.
+const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../..");
+const DIST = resolve(process.env.DIST ?? join(REPO_ROOT, "apps/web/dist"));
 const SITE = process.env.SITE; // e.g. https://pujan-banik-arnab.banikarnab-ipe.workers.dev
 const PORT = Number(process.env.PORT ?? 0); // 0 = ephemeral
 

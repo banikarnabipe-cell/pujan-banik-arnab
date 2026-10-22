@@ -15,11 +15,14 @@
  * Exit 0 = _headers updated + coverage verified; 1 = inconsistent dist.
  */
 import { readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { extractInlineScripts, cspHashFor, verifyCspCoverage } from "./lib/csp.mjs";
 
-const DIST = "/home/z/my-project/apps/web/dist";
-const HEADERS = "/home/z/my-project/apps/web/public/_headers";
+// Repo-relative so the tool works from any checkout location.
+const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "../../..");
+const DIST = join(REPO_ROOT, "apps/web/dist");
+const HEADERS = join(REPO_ROOT, "apps/web/public/_headers");
 
 const html = readFileSync(join(DIST, "index.html"), "utf8");
 const inline = extractInlineScripts(html);

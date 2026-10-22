@@ -14,17 +14,31 @@
   // wrangler dry-runs, and the Cloudflare Git integration alike.
   "build": {
     "command": "pnpm -r build",
-    "cwd": "."
+    "cwd": ".",
   },
   "assets": {
     "directory": "./apps/web/dist",
-    "not_found_handling": "none"
+    "not_found_handling": "none",
   },
+  // This Worker ships STATIC ASSETS ONLY - there is no Worker code, no
+  // bindings, no routes and no custom domain. Cloudflare rejects a deploy
+  // that tries to attach Workers Logs / Tail Workers to such a Worker
+  // ("Logpush cannot be added to a Worker that only has static assets"),
+  // and wrangler v4 enables observability by default. Turning it off keeps
+  // the deployment payload valid for an assets-only Worker.
+  "observability": {
+    "enabled": false,
+  },
+  // Previews: Cloudflare's branch-oriented preview workflow. The block is
+  // REQUIRED for `wrangler preview` (and therefore for the Workers Builds
+  // preview builds that run on every pull request). This Worker has no
+  // preview-specific variables or bindings, so it is empty.
+  "previews": {},
   // Preview environment: separate Worker so preview deployments can never
   // touch production traffic. `wrangler deploy --env preview`.
   "env": {
     "preview": {
-      "name": "pujan-banik-arnab-preview"
-    }
-  }
+      "name": "pujan-banik-arnab-preview",
+    },
+  },
 }

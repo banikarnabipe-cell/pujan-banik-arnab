@@ -1,9 +1,12 @@
 # Security headers for Cloudflare Workers static assets.
 # Served verbatim from the asset directory root (dist/_headers).
-# NOTE: script-src pins the sha256 of the single inline bootstrap script
-# (html.js gate in Layout.astro). If that script's content changes, recompute:
+# NOTE: script-src pins the sha256 of EVERY inline script in the built page.
+# Astro auto-inlines small processed <script> blocks, so any inline script
+# that is not pinned here is silently blocked on the edge (v0.7.1 incident:
+# reveal observer never ran, all [data-reveal] content invisible). After ANY
+# change that could touch inline scripts, recompute and self-verify:
 #   pnpm build && node tooling/scripts/csp-hash.mjs
-# and update the hash below. Style-src keeps 'unsafe-inline' (Astro scoped-style
+# CI enforces consistency with tooling/scripts/verify-csp.mjs. Style-src keeps 'unsafe-inline' (Astro scoped-style
 # injection); everything else is locked to 'self'.
 
 /*

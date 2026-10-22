@@ -195,8 +195,17 @@ decision; add npm/yarn lockfiles.
 - Target: **Cloudflare Workers (static assets)** — `wrangler.jsonc` at repo
   root; assets dir `./apps/web/dist`; no bindings; no secrets (fully static).
 - `pnpm deploy` → production (top-level env); `pnpm deploy:preview` →
-  `pujan-banik-arnab-preview` Worker; `pnpm deploy:dry` → local
-  validation.
+  a Cloudflare **Preview** of the current branch (served at
+  `<branch>-<worker>.workers.dev`); `pnpm deploy:dry` → local validation.
+- **Preview builds need the `previews` block** in `wrangler.jsonc`. Cloudflare
+  runs a Preview build for every branch that is not the production branch, via
+  `wrangler preview`, and that command refuses to run without it — the build
+  then fails in about a second, before the build command even runs, and the
+  "Workers Builds" check is red on every pull request. The block can be empty:
+  this Worker has no preview-specific variables or bindings.
+- **Observability is off** (`"observability": { "enabled": false }`). This
+  Worker ships static assets only, and Cloudflare rejects a deploy that tries
+  to attach Workers Logs / Tail Workers to such a Worker.
 - Security headers + CSP live in `apps/web/public/_headers` (served from the
   asset root). The inline bootstrap script is pinned by sha256 — after
   changing it: `pnpm build && node tooling/scripts/csp-hash.mjs && pnpm build`.

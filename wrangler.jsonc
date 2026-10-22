@@ -34,8 +34,9 @@
   // preview builds that run on every pull request). This Worker has no
   // preview-specific variables or bindings, so it is empty.
   "previews": {},
-  // Preview environment: separate Worker so preview deployments can never
-  // touch production traffic. `wrangler deploy --env preview`.
+  // Dedicated preview Worker, for a preview that should live under its own
+  // name rather than as a branch Preview. Not used by `pnpm deploy:preview`
+  // (that publishes a branch Preview); kept as a manual escape hatch.
   "env": {
     "preview": {
       "name": "pujan-banik-arnab-preview",

@@ -19,7 +19,7 @@
     "format:check": "prettier --check .",
     "test": "pnpm --filter @pba/web test",
     "deploy": "pnpm build && wrangler deploy --env=\"\"",
-    "deploy:preview": "pnpm build && wrangler deploy --env preview",
+    "deploy:preview": "pnpm build && wrangler preview",
     "deploy:dry": "pnpm build && wrangler deploy --dry-run",
     "qa:design": "node tooling/scripts/verify-design-contract.mjs",
     "qa:env": "node tooling/scripts/verify-env-emulation.mjs",

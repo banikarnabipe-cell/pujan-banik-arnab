@@ -57,7 +57,7 @@ pnpm format                # prettier (config in packages/config)
 | `pnpm manifest:check`          | fail if the committed manifest is out of date                                                         |
 | `pnpm csp:hash`                | re-pin the inline script hashes after touching the boot script                                        |
 | `pnpm deploy`                  | build + `wrangler deploy` (production, top-level env)                                                 |
-| `pnpm deploy:preview`          | build + deploy to the preview Worker                                                                  |
+| `pnpm deploy:preview`          | build + publish a Cloudflare Preview for the current branch                                           |
 | `pnpm resume`                  | regenerate `apps/web/public/resume.pdf` from the CV                                                   |
 
 The browser gates need `playwright-core` (a devDependency) and an installed
